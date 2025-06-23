@@ -119,6 +119,22 @@
                 </el-button>
               </el-col>
             </el-row>
+            
+            <el-divider />
+            
+            <h3>注册测试</h3>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-button @click="testCompanyRegister" type="primary" block>
+                  测试企业注册
+                </el-button>
+              </el-col>
+              <el-col :span="12">
+                <el-button @click="testUserRegister" type="success" block>
+                  测试用户注册
+                </el-button>
+              </el-col>
+            </el-row>
           </div>
         </el-card>
       </el-main>
@@ -131,7 +147,7 @@ import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
-import { getUserProfile, updateUserProfile } from '@/api/auth'
+import { getUserProfile, updateUserProfile, registerCompany, registerUser } from '@/api/auth'
 
 const userStore = useUserStore()
 
@@ -278,6 +294,51 @@ const showUserInfoInConsole = () => {
 const showAllInConsole = () => {
   userStore.debugInfo()
   ElMessage.info('所有调试信息已输出到控制台')
+}
+
+// 测试企业注册
+const testCompanyRegister = async () => {
+  try {
+    const testData = {
+      companyName: "新建科技公司",
+      contactPerson: "王小明",
+      contactPhone: "13912345678",
+      contactEmail: "wangxm@newtech.com"
+    }
+    
+    apiResult.value = '正在测试企业注册...'
+    const response = await registerCompany(testData)
+    apiResult.value = JSON.stringify(response, null, 2)
+    ElMessage.success('企业注册测试完成')
+    
+  } catch (error) {
+    apiResult.value = `错误: ${error.message}`
+    ElMessage.error('企业注册测试失败')
+  }
+}
+
+// 测试用户注册
+const testUserRegister = async () => {
+  try {
+    const testData = {
+      username: "newemployee",
+      password: "password123",
+      nickname: "新员工",
+      phoneNumber: "13312345678",
+      email: "newemployee@example.com",
+      gender: 1,
+      companyId: 1
+    }
+    
+    apiResult.value = '正在测试用户注册...'
+    const response = await registerUser(testData)
+    apiResult.value = JSON.stringify(response, null, 2)
+    ElMessage.success('用户注册测试完成')
+    
+  } catch (error) {
+    apiResult.value = `错误: ${error.message}`
+    ElMessage.error('用户注册测试失败')
+  }
 }
 
 // 组件挂载时初始化

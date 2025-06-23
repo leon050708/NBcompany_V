@@ -92,14 +92,6 @@
           </el-select>
         </el-form-item>
         
-        <el-form-item label="验证码" prop="verifyCode">
-          <el-input
-            v-model="registerForm.verifyCode"
-            placeholder="请输入验证码"
-            size="large"
-          />
-        </el-form-item>
-        
         <el-form-item>
           <el-button
             type="primary"
@@ -146,8 +138,7 @@ const registerForm = reactive({
   phoneNumber: '',
   email: '',
   gender: 0,
-  companyId: '',
-  verifyCode: ''
+  companyId: ''
 })
 
 const validateConfirmPassword = (rule, value, callback) => {
@@ -181,9 +172,6 @@ const registerRules = {
   ],
   companyId: [
     { required: true, message: '请选择所属企业', trigger: 'change' }
-  ],
-  verifyCode: [
-    { required: true, message: '请输入验证码', trigger: 'blur' }
   ]
 }
 
