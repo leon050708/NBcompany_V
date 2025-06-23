@@ -50,6 +50,20 @@
                   </el-radio-group>
                 </el-form-item>
                 
+                <el-form-item label="所属企业">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <el-input v-model="companyName" disabled style="flex: 1;" />
+                    <el-button 
+                      type="primary" 
+                      size="small" 
+                      @click="getCompanyName"
+                      :loading="companyLoading"
+                    >
+                      刷新
+                    </el-button>
+                  </div>
+                </el-form-item>
+                
                 <el-form-item>
                   <el-button
                     type="primary"
@@ -120,11 +134,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
-import { updateUserProfile, updateUserPassword } from '@/api/auth'
+import { updateUserProfile, updateUserPassword, getCompanyList } from '@/api/auth'
 
 const userStore = useUserStore()
 
@@ -132,6 +146,8 @@ const profileFormRef = ref()
 const passwordFormRef = ref()
 const profileLoading = ref(false)
 const passwordLoading = ref(false)
+const companyName = ref('')
+const companyLoading = ref(false)
 
 const userInfo = computed(() => userStore.userInfo)
 
@@ -219,12 +235,67 @@ const handleUpdatePassword = async () => {
   }
 }
 
-onMounted(() => {
+// 获取公司名称
+const getCompanyName = async () => {
+  if (!userInfo.value.companyId) {
+    companyName.value = '未分配企业'
+    return
+  }
+  
+  try {
+    companyLoading.value = true
+    const response = await getCompanyList({ id: userInfo.value.companyId })
+    if (response.data.records && response.data.records.length > 0) {
+      companyName.value = response.data.records[0].companyName
+    } else {
+      companyName.value = '企业信息获取失败'
+    }
+  } catch (error) {
+    console.error('获取公司信息失败:', error)
+    companyName.value = '企业信息获取失败'
+  } finally {
+    companyLoading.value = false
+  }
+}
+
+onMounted(async () => {
+  console.log('=== 个人资料页面加载 ===')
+  console.log('初始用户信息:', userInfo.value)
+  
+  // 如果用户信息不完整，重新获取
+  if (!userInfo.value.id) {
+    console.log('用户信息不完整，重新获取...')
+    try {
+      await userStore.getUserInfo()
+      console.log('重新获取后的用户信息:', userInfo.value)
+    } catch (error) {
+      console.error('获取用户信息失败:', error)
+    }
+  }
+  
   // 初始化表单数据
   profileForm.nickname = userInfo.value.nickname || ''
   profileForm.phoneNumber = userInfo.value.phoneNumber || ''
   profileForm.email = userInfo.value.email || ''
   profileForm.gender = userInfo.value.gender || 0
+  
+  // 获取公司名称
+  await getCompanyName()
+  
+  // 调试信息
+  console.log('=== 个人资料页面用户信息 ===')
+  console.log('用户信息:', userInfo.value)
+  console.log('表单数据:', profileForm)
+  console.log('============================')
+})
+
+watch(() => userInfo.value, (newValue) => {
+  if (newValue.id) {
+    profileForm.nickname = newValue.nickname || ''
+    profileForm.phoneNumber = newValue.phoneNumber || ''
+    profileForm.email = newValue.email || ''
+    profileForm.gender = newValue.gender || 0
+  }
 })
 </script>
 

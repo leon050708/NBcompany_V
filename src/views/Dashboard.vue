@@ -87,7 +87,7 @@
                   </div>
                 </template>
                 <div class="card-content">
-                  <p><strong>企业名称：</strong>{{ userInfo.companyName || '未分配企业' }}</p>
+                  <p><strong>企业名称：</strong>{{ companyName || '未分配企业' }}</p>
                   <p><strong>企业角色：</strong>{{ getCompanyRoleText() }}</p>
                   <p><strong>用户类型：</strong>{{ getUserTypeText() }}</p>
                 </div>
@@ -120,12 +120,14 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown, House, User, UserFilled, Tools } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { getCompanyList } from '@/api/auth'
 
 const router = useRouter()
 const userStore = useUserStore()
 
 const activeMenu = ref('dashboard')
 const userInfo = computed(() => userStore.userInfo)
+const companyName = ref('')
 
 const getUserTypeText = () => {
   switch (userInfo.value.userType) {
@@ -152,6 +154,26 @@ const getCompanyRoleText = () => {
 const formatDate = (dateString) => {
   if (!dateString) return ''
   return new Date(dateString).toLocaleString('zh-CN')
+}
+
+// 获取企业名称
+const getCompanyName = async () => {
+  if (!userInfo.value.companyId) {
+    companyName.value = '未分配企业'
+    return
+  }
+  
+  try {
+    const response = await getCompanyList({ id: userInfo.value.companyId })
+    if (response.data.records && response.data.records.length > 0) {
+      companyName.value = response.data.records[0].companyName
+    } else {
+      companyName.value = '企业信息获取失败'
+    }
+  } catch (error) {
+    console.error('获取公司信息失败:', error)
+    companyName.value = '企业信息获取失败'
+  }
 }
 
 const handleMenuSelect = (index) => {
@@ -195,14 +217,34 @@ const handleCommand = async (command) => {
 }
 
 onMounted(async () => {
-  // 如果用户信息不完整，重新获取
-  if (!userInfo.value.id) {
+  console.log('=== 仪表板页面加载 ===')
+  console.log('初始用户信息:', userInfo.value)
+  console.log('用户信息字段详情:')
+  console.log('- id:', userInfo.value.id)
+  console.log('- username:', userInfo.value.username)
+  console.log('- nickname:', userInfo.value.nickname)
+  console.log('- phoneNumber:', userInfo.value.phoneNumber)
+  console.log('- email:', userInfo.value.email)
+  console.log('- companyId:', userInfo.value.companyId)
+  console.log('- companyName:', userInfo.value.companyName)
+  
+  // 如果用户信息不完整（缺少phoneNumber或email），重新获取
+  if (!userInfo.value.id || !userInfo.value.phoneNumber || !userInfo.value.email) {
+    console.log('用户信息不完整，重新获取...')
     try {
       await userStore.getUserInfo()
+      console.log('重新获取后的用户信息:', userInfo.value)
     } catch (error) {
       console.error('获取用户信息失败:', error)
     }
+  } else {
+    console.log('用户信息已存在:', userInfo.value)
   }
+  
+  // 获取企业名称
+  await getCompanyName()
+  
+  console.log('=== 仪表板页面加载完成 ===')
 })
 </script>
 

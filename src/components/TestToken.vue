@@ -327,7 +327,8 @@ const testUserRegister = async () => {
       phoneNumber: "13312345678",
       email: "newemployee@example.com",
       gender: 1,
-      companyId: 1
+      companyId: 1,
+      companyName: "新建科技公司"
     }
     
     apiResult.value = '正在测试用户注册...'

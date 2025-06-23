@@ -12,18 +12,53 @@ export const useUserStore = defineStore('user', () => {
   const loginAction = async (loginData) => {
     try {
       const response = await login(loginData)
-      const { token: newToken, userInfo: newUserInfo } = response.data
+      console.log('登录响应:', response)
+      
+      // 根据实际返回的数据结构处理
+      let newToken, newUserInfo
+      
+      if (response.data && response.data.data) {
+        // 如果数据在 response.data.data 中
+        newToken = response.data.data.token
+        newUserInfo = response.data.data.userInfo || response.data.data
+      } else if (response.data) {
+        // 如果数据直接在 response.data 中
+        newToken = response.data.token
+        newUserInfo = response.data.userInfo || response.data
+      } else {
+        throw new Error('登录响应数据格式错误')
+      }
+      
+      // 确保所有字段都被保存
+      const completeUserInfo = {
+        id: newUserInfo.id,
+        username: newUserInfo.username,
+        nickname: newUserInfo.nickname,
+        phoneNumber: newUserInfo.phoneNumber,
+        email: newUserInfo.email,
+        gender: newUserInfo.gender,
+        userType: newUserInfo.userType,
+        companyId: newUserInfo.companyId,
+        companyName: newUserInfo.companyName,
+        companyRole: newUserInfo.companyRole,
+        status: newUserInfo.status,
+        createdAt: newUserInfo.createdAt,
+        lastLoginTime: newUserInfo.lastLoginTime
+      }
       
       // 保存token和用户信息
       token.value = newToken
-      userInfo.value = newUserInfo
+      userInfo.value = completeUserInfo
       
       // 保存到localStorage
       localStorage.setItem('token', newToken)
-      localStorage.setItem('userInfo', JSON.stringify(newUserInfo))
+      localStorage.setItem('userInfo', JSON.stringify(completeUserInfo))
+      
+      console.log('保存的用户信息:', completeUserInfo)
       
       return response
     } catch (error) {
+      console.error('登录失败:', error)
       throw error
     }
   }
@@ -32,10 +67,43 @@ export const useUserStore = defineStore('user', () => {
   const getUserInfo = async () => {
     try {
       const response = await getUserProfile()
-      userInfo.value = response.data
-      localStorage.setItem('userInfo', JSON.stringify(response.data))
+      console.log('获取用户信息响应:', response)
+      
+      // 根据实际返回的数据结构处理
+      let userData
+      if (response.data && response.data.data) {
+        userData = response.data.data
+      } else if (response.data) {
+        userData = response.data
+      } else {
+        throw new Error('获取用户信息响应数据格式错误')
+      }
+      
+      // 确保所有字段都被保存
+      const completeUserInfo = {
+        id: userData.id,
+        username: userData.username,
+        nickname: userData.nickname,
+        phoneNumber: userData.phoneNumber,
+        email: userData.email,
+        gender: userData.gender,
+        userType: userData.userType,
+        companyId: userData.companyId,
+        companyName: userData.companyName,
+        companyRole: userData.companyRole,
+        status: userData.status,
+        createdAt: userData.createdAt,
+        lastLoginTime: userData.lastLoginTime
+      }
+      
+      userInfo.value = completeUserInfo
+      localStorage.setItem('userInfo', JSON.stringify(completeUserInfo))
+      
+      console.log('更新后的用户信息:', completeUserInfo)
+      
       return response
     } catch (error) {
+      console.error('获取用户信息失败:', error)
       throw error
     }
   }
@@ -77,6 +145,27 @@ export const useUserStore = defineStore('user', () => {
     console.log('用户信息:', userInfo.value)
     console.log('用户信息 (localStorage):', JSON.parse(localStorage.getItem('userInfo') || '{}'))
     console.log('是否已登录:', isLoggedIn.value)
+    
+    // 详细字段检查
+    const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+    console.log('=== 详细字段检查 ===')
+    console.log('当前用户信息字段:')
+    console.log('- id:', userInfo.value.id)
+    console.log('- username:', userInfo.value.username)
+    console.log('- nickname:', userInfo.value.nickname)
+    console.log('- phoneNumber:', userInfo.value.phoneNumber)
+    console.log('- email:', userInfo.value.email)
+    console.log('- companyId:', userInfo.value.companyId)
+    console.log('- companyName:', userInfo.value.companyName)
+    
+    console.log('localStorage中的用户信息字段:')
+    console.log('- id:', storedUserInfo.id)
+    console.log('- username:', storedUserInfo.username)
+    console.log('- nickname:', storedUserInfo.nickname)
+    console.log('- phoneNumber:', storedUserInfo.phoneNumber)
+    console.log('- email:', storedUserInfo.email)
+    console.log('- companyId:', storedUserInfo.companyId)
+    console.log('- companyName:', storedUserInfo.companyName)
     console.log('========================')
   }
 

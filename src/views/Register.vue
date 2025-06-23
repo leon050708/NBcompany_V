@@ -82,6 +82,7 @@
             :remote-method="searchCompanies"
             :loading="companyLoading"
             style="width: 100%"
+            @change="handleCompanyChange"
           >
             <el-option
               v-for="company in companyList"
@@ -138,7 +139,8 @@ const registerForm = reactive({
   phoneNumber: '',
   email: '',
   gender: 0,
-  companyId: ''
+  companyId: '',
+  companyName: ''
 })
 
 const validateConfirmPassword = (rule, value, callback) => {
@@ -181,7 +183,10 @@ const searchCompanies = async (keyword) => {
   try {
     companyLoading.value = true
     const response = await getCompanyList({ keyword, size: 20 })
-    companyList.value = response.data.records
+    
+    // 在前端过滤状态为1的企业
+    const activeCompanies = response.data.records.filter(company => company.status === 1)
+    companyList.value = activeCompanies
   } catch (error) {
     console.error('获取企业列表失败:', error)
   } finally {
@@ -193,7 +198,10 @@ const loadCompanies = async () => {
   try {
     companyLoading.value = true
     const response = await getCompanyList({ size: 20 })
-    companyList.value = response.data.records
+    
+    // 在前端过滤状态为1的企业
+    const activeCompanies = response.data.records.filter(company => company.status === 1)
+    companyList.value = activeCompanies
   } catch (error) {
     console.error('获取企业列表失败:', error)
   } finally {
@@ -209,6 +217,13 @@ const handleRegister = async () => {
     // 移除确认密码字段
     const { confirmPassword, ...registerData } = registerForm
     
+    // 调试信息：显示发送给后端的数据
+    console.log('=== 用户注册数据 ===')
+    console.log('发送给后端的数据:', registerData)
+    console.log('企业ID:', registerData.companyId)
+    console.log('企业名称:', registerData.companyName)
+    console.log('====================')
+    
     const response = await registerUser(registerData)
     ElMessage.success(response.message || '用户注册成功，请等待企业管理员分配权限')
     
@@ -219,6 +234,16 @@ const handleRegister = async () => {
     ElMessage.error(error.message || '用户注册失败')
   } finally {
     loading.value = false
+  }
+}
+
+const handleCompanyChange = (companyId) => {
+  // 根据选择的企业ID找到对应的企业信息
+  const selectedCompany = companyList.value.find(company => company.id === companyId)
+  if (selectedCompany) {
+    registerForm.companyId = selectedCompany.id
+    registerForm.companyName = selectedCompany.companyName
+    console.log('选择的企业:', selectedCompany)
   }
 }
 
