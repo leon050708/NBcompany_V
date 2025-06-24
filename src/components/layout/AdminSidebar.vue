@@ -26,6 +26,11 @@
       <el-icon><Tools /></el-icon>
       <span>测试页面</span>
     </el-menu-item>
+
+    <el-menu-item index="meetings">
+      <el-icon><Suitcase /></el-icon>
+      <span>会议管理</span>
+    </el-menu-item>
   </el-menu>
 </template>
 

@@ -58,8 +58,12 @@
               </el-card>
             </div>
           </div>
-          
-          <!-- 个人资料 -->
+
+            <MeetingManagement
+                v-else-if="currentView === 'meetings'"
+            />
+
+            <!-- 个人资料 -->
           <UserProfile 
             v-else-if="currentView === 'profile'"
           />
@@ -86,6 +90,7 @@ import CompanySidebar from '@/components/layout/CompanySidebar.vue'
 import CompanyOverview from '@/components/dashboard/CompanyOverview.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
+import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -105,6 +110,7 @@ const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
     case 'employees': return '员工管理'
+    case 'meetings': return '会议管理'
     case 'profile': return '个人资料'
     case 'test': return '系统测试'
     default: return '企业管理系统'

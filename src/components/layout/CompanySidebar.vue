@@ -16,6 +16,11 @@
       <el-icon><UserFilled /></el-icon>
       <span>员工管理</span>
     </el-menu-item>
+
+    <el-menu-item index="meetings">
+      <el-icon><Suitcase /></el-icon>
+      <span>会议管理</span>
+    </el-menu-item>
     
     <el-menu-item index="profile">
       <el-icon><User /></el-icon>
