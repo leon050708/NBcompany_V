@@ -53,7 +53,7 @@ const routes = [
     name: 'Test',
     component: () => import('@/views/dashboard/Test.vue'),
     meta: { requiresAuth: false }
-  }
+  },
 ]
 
 const router = createRouter({

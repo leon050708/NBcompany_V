@@ -4,19 +4,19 @@
     <div style="position: fixed; top: 10px; left: 10px; background: red; color: black; padding: 10px; z-index: 9999;">
       平台管理员页面已加载 - {{ new Date().toLocaleTimeString() }}
     </div>
-    
+
     <el-container style="height: 100vh;">
       <!-- 侧边栏 -->
       <el-aside width="250px" style="background-color: #304156;">
         <div class="sidebar-header">
           <h3>管理系统</h3>
         </div>
-        <AdminSidebar 
-          :current-view="currentView" 
+        <AdminSidebar
+          :current-view="currentView"
           @menu-select="handleMenuSelect"
         />
       </el-aside>
-      
+
       <!-- 主内容区 -->
       <el-container>
         <el-header style="background-color: #fff; border-bottom: 1px solid #e6e6e6; display: flex; align-items: center; justify-content: space-between;">
@@ -38,32 +38,31 @@
             </el-dropdown>
           </div>
         </el-header>
-        
+
         <el-main style="background-color: #f0f2f5; padding: 0;">
           <!-- 仪表板概览 -->
-          <AdminOverview 
+          <AdminOverview
             v-if="currentView === 'dashboard'"
             :stats="stats"
             @navigate="handleMenuSelect"
           />
-          
+
           <!-- 企业管理 -->
-          <CompanyManagement 
+          <CompanyManagement
             v-else-if="currentView === 'companies'"
             ref="companyManagementRef"
           />
 
-            <MeetingManagement
-                v-else-if="currentView === 'meetings'"
-            />
+          <MeetingManagement v-else-if="currentView === 'meetings/list'" />
+          <MeetingApproval v-else-if="currentView === 'meetings/approval'" />
 
             <!-- 个人资料 -->
-          <UserProfile 
+          <UserProfile
             v-else-if="currentView === 'profile'"
           />
-          
+
           <!-- 测试页面 -->
-          <TestPage 
+          <TestPage
             v-else-if="currentView === 'test'"
           />
         </el-main>
@@ -86,7 +85,7 @@ import CompanyManagement from '@/components/dashboard/CompanyManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
 import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
-
+import MeetingApproval from "@/components/dashboard/MeetingApproval.vue";
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -106,7 +105,8 @@ const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
     case 'companies': return '企业管理'
-    case 'meetings': return '会议管理'
+    case 'meetings/list': return '会议列表';
+    case 'meetings/approval': return '会议审核';
     case 'profile': return '个人资料'
     case 'test': return '系统测试'
     default: return '管理系统'
@@ -133,7 +133,7 @@ const handleCommand = async (command) => {
           type: 'warning'
         }
       )
-      
+
       userStore.logout()
       router.push('/login')
       ElMessage.success('已退出登录')

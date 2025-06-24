@@ -46,6 +46,9 @@
           <UserProfile 
             v-else-if="currentView === 'profile'"
           />
+          <MeetingManagement
+              v-else-if="currentView === 'meetings/list'"
+          />
           
           <!-- 测试页面 -->
           <TestPage 
@@ -69,6 +72,7 @@ import UserSidebar from '@/components/layout/UserSidebar.vue'
 import UserOverview from '@/components/dashboard/UserOverview.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
+import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -87,6 +91,7 @@ const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
     case 'profile': return '个人资料'
+    case 'meetings/list': return '会议列表'
     case 'test': return '系统测试'
     default: return '用户系统'
   }
