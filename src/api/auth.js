@@ -60,4 +60,22 @@ export function updateUserPassword(data) {
     method: 'put',
     data
   })
+}
+
+// 管理员获取所有企业列表
+export function getAdminCompanyList(params) {
+  return request({
+    url: '/v1/companies',
+    method: 'get',
+    params
+  })
+}
+
+// 管理员审核企业状态
+export function updateCompanyStatus(companyId, status) {
+  return request({
+    url: `/v1/admin/companies/${companyId}/status`,
+    method: 'put',
+    data: { status }
+  })
 } 

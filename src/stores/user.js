@@ -29,21 +29,23 @@ export const useUserStore = defineStore('user', () => {
         throw new Error('登录响应数据格式错误')
       }
       
-      // 确保所有字段都被保存
+      console.log('原始用户信息:', newUserInfo)
+      
+      // 确保所有字段都被保存，处理可能的字段名不匹配
       const completeUserInfo = {
-        id: newUserInfo.id,
-        username: newUserInfo.username,
-        nickname: newUserInfo.nickname,
-        phoneNumber: newUserInfo.phoneNumber,
-        email: newUserInfo.email,
-        gender: newUserInfo.gender,
-        userType: newUserInfo.userType,
-        companyId: newUserInfo.companyId,
-        companyName: newUserInfo.companyName,
-        companyRole: newUserInfo.companyRole,
-        status: newUserInfo.status,
-        createdAt: newUserInfo.createdAt,
-        lastLoginTime: newUserInfo.lastLoginTime
+        id: newUserInfo.id || newUserInfo.userId,
+        username: newUserInfo.username || newUserInfo.userName,
+        nickname: newUserInfo.nickname || newUserInfo.nickName || newUserInfo.name,
+        phoneNumber: newUserInfo.phoneNumber || newUserInfo.phone || newUserInfo.mobile,
+        email: newUserInfo.email || newUserInfo.mail,
+        gender: newUserInfo.gender || newUserInfo.sex || 0,
+        userType: newUserInfo.userType || newUserInfo.type || 0,
+        companyId: newUserInfo.companyId || newUserInfo.company_id,
+        companyName: newUserInfo.companyName || newUserInfo.company_name,
+        companyRole: newUserInfo.companyRole || newUserInfo.company_role || 0,
+        status: newUserInfo.status || 1,
+        createdAt: newUserInfo.createdAt || newUserInfo.created_at,
+        lastLoginTime: newUserInfo.lastLoginTime || newUserInfo.last_login_time
       }
       
       // 保存token和用户信息
@@ -79,21 +81,23 @@ export const useUserStore = defineStore('user', () => {
         throw new Error('获取用户信息响应数据格式错误')
       }
       
-      // 确保所有字段都被保存
+      console.log('原始用户数据:', userData)
+      
+      // 确保所有字段都被保存，处理可能的字段名不匹配
       const completeUserInfo = {
-        id: userData.id,
-        username: userData.username,
-        nickname: userData.nickname,
-        phoneNumber: userData.phoneNumber,
-        email: userData.email,
-        gender: userData.gender,
-        userType: userData.userType,
-        companyId: userData.companyId,
-        companyName: userData.companyName,
-        companyRole: userData.companyRole,
-        status: userData.status,
-        createdAt: userData.createdAt,
-        lastLoginTime: userData.lastLoginTime
+        id: userData.id || userData.userId,
+        username: userData.username || userData.userName,
+        nickname: userData.nickname || userData.nickName || userData.name,
+        phoneNumber: userData.phoneNumber || userData.phone || userData.mobile,
+        email: userData.email || userData.mail,
+        gender: userData.gender || userData.sex || 0,
+        userType: userData.userType || userData.type || 0,
+        companyId: userData.companyId || userData.company_id,
+        companyName: userData.companyName || userData.company_name,
+        companyRole: userData.companyRole || userData.company_role || 0,
+        status: userData.status || 1,
+        createdAt: userData.createdAt || userData.created_at,
+        lastLoginTime: userData.lastLoginTime || userData.last_login_time
       }
       
       userInfo.value = completeUserInfo

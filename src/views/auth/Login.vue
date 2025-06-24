@@ -93,20 +93,46 @@ const handleLogin = async () => {
     const response = await userStore.loginAction(loginForm)
     ElMessage.success('登录成功')
     
-    // 在控制台输出token和用户信息，方便调试
-    console.log('=== 登录成功 ===')
-    console.log('Token:', localStorage.getItem('token'))
-    console.log('用户信息:', JSON.parse(localStorage.getItem('userInfo') || '{}'))
-    console.log('完整响应:', response)
-    console.log('================')
+    // 根据用户角色跳转到不同页面
+    const userRole = getUserRole(userStore.userInfo)
+    const targetRoute = getTargetRouteByRole(userRole)
     
-    // 跳转到主页
-    router.push('/dashboard')
+    console.log('用户角色:', userRole)
+    console.log('跳转目标:', targetRoute)
+    
+    router.push(targetRoute)
   } catch (error) {
     console.error('登录失败:', error)
     ElMessage.error(error.message || '登录失败')
   } finally {
     loading.value = false
+  }
+}
+
+// 获取用户角色
+function getUserRole(userInfo) {
+  if (userInfo.userType === 2) {
+    return 'admin' // 平台管理员
+  } else if (userInfo.userType === 1 && userInfo.companyRole === 2) {
+    return 'company_admin' // 企业管理员
+  } else if (userInfo.userType === 1 && userInfo.companyRole === 1) {
+    return 'user' // 普通用户
+  } else {
+    return 'user' // 默认普通用户
+  }
+}
+
+// 根据角色获取目标路由
+function getTargetRouteByRole(role) {
+  switch (role) {
+    case 'admin':
+      return '/admin-dashboard'
+    case 'company_admin':
+      return '/company-dashboard'
+    case 'user':
+      return '/dashboard'
+    default:
+      return '/dashboard'
   }
 }
 </script>
@@ -158,7 +184,8 @@ const handleLogin = async () => {
 
 .login-footer {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
   align-items: center;
   margin-top: 20px;
 }
