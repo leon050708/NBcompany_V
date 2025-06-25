@@ -17,6 +17,11 @@
       <span>企业管理</span>
     </el-menu-item>
     
+    <el-menu-item index="news">
+      <el-icon><Document /></el-icon>
+      <span>动态管理</span>
+    </el-menu-item>
+
     <el-menu-item index="profile">
       <el-icon><User /></el-icon>
       <span>个人资料</span>
@@ -31,7 +36,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { House, User, Tools, OfficeBuilding } from '@element-plus/icons-vue'
+import { House, User, Tools, OfficeBuilding, Document } from '@element-plus/icons-vue'
 
 const props = defineProps({
   currentView: {

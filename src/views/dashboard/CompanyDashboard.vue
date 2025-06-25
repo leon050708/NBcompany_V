@@ -59,6 +59,8 @@
             </div>
           </div>
           
+          <NewsManagement v-else-if="currentView === 'news'" />
+
           <!-- 个人资料 -->
           <UserProfile 
             v-else-if="currentView === 'profile'"
@@ -84,6 +86,7 @@ import { useUserStore } from '@/stores/user'
 // 导入组件
 import CompanySidebar from '@/components/layout/CompanySidebar.vue'
 import CompanyOverview from '@/components/dashboard/CompanyOverview.vue'
+import NewsManagement from '@/components/dashboard/NewsManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
 
@@ -105,6 +108,7 @@ const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
     case 'employees': return '员工管理'
+    case 'news': return '动态管理'
     case 'profile': return '个人资料'
     case 'test': return '系统测试'
     default: return '企业管理系统'
