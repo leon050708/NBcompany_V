@@ -2,6 +2,7 @@
   <div class="news-management">
     <h2>行业动态管理</h2>
 
+    <!-- 操作与筛选栏 -->
     <el-card class="action-bar">
       <el-row :gutter="20" align="middle">
         <el-col :span="16">
@@ -34,6 +35,7 @@
       </el-row>
     </el-card>
 
+    <!-- 动态列表 -->
     <el-table :data="newsList" v-loading="loading" style="width: 100%; margin-top: 20px;" @sort-change="handleSortChange">
       <el-table-column prop="id" label="ID" width="100" sortable="custom" />
       <el-table-column prop="title" label="标题" min-width="200">
@@ -65,7 +67,10 @@
       </el-table-column>
     </el-table>
 
+    <!-- 分页 -->
     <el-pagination v-if="pagination.total > 0" class="pagination-container" v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize" :page-sizes="[10, 20, 50, 100]" :total="pagination.total" layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+    
+    <!-- 编辑/新建弹窗 -->
     <el-dialog v-model="editorDialogVisible" :title="editorDialogTitle" width="60%" :close-on-click-modal="false">
       <el-form ref="editorFormRef" :model="editorForm" :rules="editorRules" label-width="100px">
         <el-form-item label="标题" prop="title"><el-input v-model="editorForm.title" placeholder="请输入动态标题" /></el-form-item>
@@ -75,6 +80,8 @@
       </el-form>
       <template #footer><el-button @click="editorDialogVisible = false">取消</el-button><el-button type="primary" @click="handleSave" :loading="saveLoading">{{ saveLoading ? '保存中...' : '保存' }}</el-button></template>
     </el-dialog>
+    
+    <!-- 独立审核弹窗 -->
     <el-dialog v-model="auditDialogVisible" title="审核动态" width="30%" :close-on-click-modal="false">
         <el-form ref="auditFormRef" :model="auditForm" label-width="80px">
             <el-form-item label="审核状态" prop="status"><el-select v-model="auditForm.status" placeholder="请选择审核结果"><el-option label="审核通过" :value="1" /><el-option label="审核不通过" :value="2" /></el-select></el-form-item>
@@ -83,6 +90,7 @@
     </el-dialog>
 
 
+    <!-- 详情查看弹窗 -->
     <el-dialog v-model="detailsDialogVisible" title="动态详情" width="60%">
         <div v-if="selectedNews" class="news-details">
             <h2>{{ selectedNews.title }}</h2>
@@ -91,6 +99,12 @@
                 <span>发布于: {{ formatDate(selectedNews.createdAt) }}</span>
                 <span>浏览量: {{ selectedNews.viewCount }}</span>
             </div>
+
+            <!-- **新增**: 封面图展示 -->
+            <div v-if="selectedNews.coverImageUrl" class="cover-image-container">
+                <img :src="selectedNews.coverImageUrl" alt="封面图片" class="cover-image" />
+            </div>
+
             <el-divider />
             <div v-html="selectedNews.content" class="content-body"></div>
         </div>
@@ -107,7 +121,6 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
-// **新增** 导入 getNewsDetails API
 import { getNewsList, createNews, updateNews, deleteNews, auditNews, getNewsDetails } from '@/api/news'
 
 // --- 通用响应式数据 ---
@@ -120,7 +133,6 @@ const pagination = reactive({ currentPage: 1, pageSize: 10, total: 0 })
 
 // --- 编辑/新建弹窗数据 ---
 const editorDialogVisible = ref(false)
-// ... (其他弹窗数据无变化) ...
 const editorDialogTitle = ref('')
 const editorFormRef = ref(null)
 const editingNewsId = ref(null)
@@ -132,17 +144,15 @@ const editorRules = {
 
 // --- 审核弹窗数据 ---
 const auditDialogVisible = ref(false)
-// ... (其他弹窗数据无变化) ...
 const auditFormRef = ref(null)
 const auditForm = reactive({ newsId: null, status: 1 })
 
-// --- **新增** 详情弹窗数据 ---
+// --- 详情弹窗数据 ---
 const detailsDialogVisible = ref(false)
 const selectedNews = ref(null)
 
 
 // --- 权限计算属性 ---
-// ... (无变化) ...
 const userInfo = computed(() => userStore.userInfo)
 const isPlatformAdmin = computed(() => userInfo.value?.userType === 2)
 const isCompanyAdmin = computed(() => userInfo.value?.userType === 1 && userInfo.value?.companyRole === 2)
@@ -154,9 +164,7 @@ const canEditOrDelete = (newsItem) => {
 }
 const canAudit = (newsItem) => isPlatformAdmin.value && newsItem.status === 0
 
-
 // --- 自定义排序方法 ---
-// ... (无变化) ...
 const sortById = (a, b) => {
   return Number(a.id) - Number(b.id)
 }
@@ -164,7 +172,6 @@ const sortById = (a, b) => {
 
 // --- 主要方法 ---
 const loadNewsList = async () => {
-  // ... (无变化) ...
   loading.value = true
   try {
     const params = { page: pagination.currentPage, size: pagination.pageSize, title: filters.title || null, authorName: filters.authorName || null, status: filters.status }
@@ -182,7 +189,6 @@ const loadNewsList = async () => {
 }
 
 const handleSortChange = ({ prop, order }) => {
-    // ... (无变化) ...
     if (!order) {
         newsList.value.sort((a, b) => Number(b.id) - Number(a.id));
         return;
@@ -205,14 +211,15 @@ const handleSortChange = ({ prop, order }) => {
     });
 }
 
-// ... (其他方法无变化) ...
 const handleSearch = () => { pagination.currentPage = 1; loadNewsList() }
 const handleReset = () => { Object.assign(filters, { title: '', authorName: '', status: null }); handleSearch() }
 const handleSizeChange = (size) => { pagination.pageSize = size; loadNewsList() }
 const handleCurrentChange = (page) => { pagination.currentPage = page; loadNewsList() }
+
 const resetEditorForm = () => { Object.assign(editorForm, { title: '', coverImageUrl: '', summary: '', content: '' }); editingNewsId.value = null }
 const handleCreate = () => { resetEditorForm(); editorDialogTitle.value = '发布新动态'; editorDialogVisible.value = true }
 const handleEdit = (row) => { resetEditorForm(); Object.assign(editorForm, row); editingNewsId.value = row.id; editorDialogTitle.value = `编辑动态 (ID: ${row.id})`; editorDialogVisible.value = true }
+
 const handleSave = async () => {
   try {
     await editorFormRef.value.validate()
@@ -233,6 +240,7 @@ const handleSave = async () => {
     saveLoading.value = false
   }
 }
+
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(`确定要删除标题为 "${row.title}" 的动态吗？`, '警告', { type: 'warning' })
@@ -243,11 +251,13 @@ const handleDelete = async (row) => {
     if (error !== 'cancel') ElMessage.error('删除失败')
   }
 }
+
 const handleAudit = (row) => {
   auditForm.newsId = row.id
   auditForm.status = 1
   auditDialogVisible.value = true
 }
+
 const confirmAudit = async () => {
     if (!auditForm.newsId) return;
     saveLoading.value = true;
@@ -264,8 +274,6 @@ const confirmAudit = async () => {
     }
 }
 
-
-// --- **新增** 查看详情方法 ---
 const handleViewDetails = async (row) => {
     try {
         const response = await getNewsDetails(row.id);
@@ -297,7 +305,7 @@ onMounted(() => {
 .action-bar { padding-top: 20px; }
 .pagination-container { margin-top: 20px; display: flex; justify-content: center; }
 
-/* **新增** 详情弹窗样式 */
+/* 详情弹窗样式 */
 .news-details h2 {
     font-size: 22px;
     margin-bottom: 15px;
@@ -311,5 +319,17 @@ onMounted(() => {
 }
 .news-details .content-body {
     line-height: 1.8;
+}
+
+/* **新增**: 封面图容器和图片样式 */
+.cover-image-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.cover-image {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    object-fit: contain;
 }
 </style>
