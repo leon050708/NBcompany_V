@@ -48,9 +48,9 @@
         <span>快速操作</span>
       </template>
       <div class="action-buttons">
-        <el-button type="primary" @click="$emit('navigate', 'employees')">
+        <el-button type="primary" @click="$emit('navigate', 'members')">
           <el-icon><UserFilled /></el-icon>
-          员工管理
+          成员管理
         </el-button>
         <el-button type="success" @click="$emit('navigate', 'profile')">
           <el-icon><User /></el-icon>

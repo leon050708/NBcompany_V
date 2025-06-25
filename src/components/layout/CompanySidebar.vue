@@ -1,20 +1,20 @@
 <template>
   <el-menu
-    :default-active="activeMenu"
-    class="sidebar-menu"
-    @select="handleMenuSelect"
+    :default-active="currentView"
+    class="company-sidebar"
     background-color="#304156"
     text-color="#bfcbd9"
     active-text-color="#409EFF"
+    @select="handleSelect"
   >
     <el-menu-item index="dashboard">
-      <el-icon><House /></el-icon>
+      <el-icon><DataBoard /></el-icon>
       <span>仪表板</span>
     </el-menu-item>
     
-    <el-menu-item index="employees">
+    <el-menu-item index="members">
       <el-icon><UserFilled /></el-icon>
-      <span>员工管理</span>
+      <span>成员管理</span>
     </el-menu-item>
     
     <el-menu-item index="profile">
@@ -24,15 +24,15 @@
     
     <el-menu-item index="test">
       <el-icon><Tools /></el-icon>
-      <span>测试页面</span>
+      <span>系统测试</span>
     </el-menu-item>
   </el-menu>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { House, User, Tools, UserFilled } from '@element-plus/icons-vue'
+import { DataBoard, UserFilled, User, Tools } from '@element-plus/icons-vue'
 
+// 定义props
 const props = defineProps({
   currentView: {
     type: String,
@@ -40,31 +40,38 @@ const props = defineProps({
   }
 })
 
+// 定义emits
 const emit = defineEmits(['menu-select'])
 
-const activeMenu = computed(() => props.currentView)
-
-const handleMenuSelect = (index) => {
+// 菜单选择处理
+const handleSelect = (index) => {
   emit('menu-select', index)
 }
 </script>
 
 <style scoped>
-.sidebar-menu {
-  height: 100%;
+.company-sidebar {
+  height: calc(100vh - 60px);
   border-right: none;
 }
 
-.sidebar-menu .el-menu-item {
+.company-sidebar .el-menu-item {
   height: 50px;
   line-height: 50px;
+  border-bottom: 1px solid #3a4a5a;
 }
 
-.sidebar-menu .el-menu-item:hover {
-  background-color: #263445;
+.company-sidebar .el-menu-item:hover {
+  background-color: #263445 !important;
 }
 
-.sidebar-menu .el-menu-item.is-active {
-  background-color: #1890ff;
+.company-sidebar .el-menu-item.is-active {
+  background-color: #1890ff !important;
+  color: #fff !important;
+}
+
+.company-sidebar .el-icon {
+  margin-right: 10px;
+  font-size: 16px;
 }
 </style> 

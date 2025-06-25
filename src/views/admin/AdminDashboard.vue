@@ -47,6 +47,11 @@
             @navigate="handleMenuSelect"
           />
           
+          <!-- 用户管理 -->
+          <UserManagement 
+            v-else-if="currentView === 'users'"
+          />
+          
           <!-- 企业管理 -->
           <CompanyManagement 
             v-else-if="currentView === 'companies'"
@@ -76,9 +81,10 @@ import { ArrowDown } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
 // 导入组件
-import AdminSidebar from '@/components/dashboard/AdminSidebar.vue'
+import AdminSidebar from '@/components/layout/AdminSidebar.vue'
 import AdminOverview from '@/components/dashboard/AdminOverview.vue'
 import CompanyManagement from '@/components/dashboard/CompanyManagement.vue'
+import UserManagement from '@/components/dashboard/UserManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
 
@@ -100,6 +106,7 @@ const stats = reactive({
 const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
+    case 'users': return '用户管理'
     case 'companies': return '企业管理'
     case 'profile': return '个人资料'
     case 'test': return '系统测试'

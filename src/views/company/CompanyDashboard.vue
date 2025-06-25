@@ -42,22 +42,10 @@
             @navigate="handleMenuSelect"
           />
           
-          <!-- 员工管理 -->
-          <div v-else-if="currentView === 'employees'" class="employees-page">
-            <div style="padding: 20px;">
-              <h2>员工管理</h2>
-              <el-card>
-                <template #header>
-                  <span>员工列表</span>
-                </template>
-                <div style="text-align: center; padding: 40px;">
-                  <el-icon size="48" color="#909399"><UserFilled /></el-icon>
-                  <h3 style="margin: 20px 0; color: #909399;">功能开发中...</h3>
-                  <p style="color: #909399;">员工管理功能正在开发中，敬请期待</p>
-                </div>
-              </el-card>
-            </div>
-          </div>
+          <!-- 成员管理 -->
+          <MemberManagement 
+            v-else-if="currentView === 'members'"
+          />
           
           <!-- 个人资料 -->
           <UserProfile 
@@ -82,8 +70,9 @@ import { ArrowDown, UserFilled } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
 // 导入组件
-import CompanySidebar from '@/components/dashboard/CompanySidebar.vue'
+import CompanySidebar from '@/components/layout/CompanySidebar.vue'
 import CompanyOverview from '@/components/dashboard/CompanyOverview.vue'
+import MemberManagement from '@/components/dashboard/MemberManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
 
@@ -104,7 +93,7 @@ const stats = reactive({
 const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
-    case 'employees': return '员工管理'
+    case 'members': return '成员管理'
     case 'profile': return '个人资料'
     case 'test': return '系统测试'
     default: return '企业管理系统'
