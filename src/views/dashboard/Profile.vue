@@ -112,7 +112,7 @@
                           <el-button 
                             type="primary" 
                             size="small" 
-                            @click="getCompanyName"
+                            @click="getCompanyNameById"
                             :loading="companyLoading"
                             style="margin-left: 10px;"
                           >
@@ -162,7 +162,7 @@
                     <el-button 
                       type="primary" 
                       size="small" 
-                      @click="getCompanyName"
+                      @click="getCompanyNameById"
                       :loading="companyLoading"
                     >
                       刷新
@@ -290,7 +290,8 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft, InfoFilled, User, Avatar, Phone, Message, UserFilled, OfficeBuilding, Lock, Clock } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
-import { updateUserProfile, updateUserPassword, getCompanyList } from '@/api/auth'
+import { updateUserProfile, updateUserPassword } from '@/api/auth'
+import { loadCompaniesMapping, getCompanyName } from '@/utils/companyMapping'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -421,7 +422,7 @@ const handleUpdatePassword = async () => {
 }
 
 // 获取公司名称
-const getCompanyName = async () => {
+const getCompanyNameById = async () => {
   if (!userInfo.value.companyId) {
     companyName.value = '未分配企业'
     return
@@ -429,10 +430,14 @@ const getCompanyName = async () => {
   
   try {
     companyLoading.value = true
-    const response = await getCompanyList({ id: userInfo.value.companyId })
-    if (response.data.records && response.data.records.length > 0) {
-      companyName.value = response.data.records[0].companyName
-    } else {
+    
+    // 确保企业映射已加载
+    await loadCompaniesMapping()
+    
+    // 使用通用映射工具获取企业名称
+    companyName.value = getCompanyName(userInfo.value.companyId)
+    
+    if (companyName.value === '未设置') {
       companyName.value = '企业信息获取失败'
     }
   } catch (error) {
@@ -502,7 +507,7 @@ onMounted(async () => {
   }
   
   // 获取公司名称
-  await getCompanyName()
+  await getCompanyNameById()
   
   // 初始化密码修改时间
   lastPasswordChange.value = '2024-01-15 14:30:00'

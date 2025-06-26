@@ -23,7 +23,10 @@
             <el-icon><OfficeBuilding /></el-icon>
           </div>
           <div class="stat-info">
-            <div class="stat-number">{{ stats.companyName }}</div>
+            <div class="stat-number">
+              <span v-if="companyLoading">加载中...</span>
+              <span v-else>{{ companyName }}</span>
+            </div>
             <div class="stat-label">所属企业</div>
           </div>
         </div>
@@ -35,7 +38,7 @@
             <el-icon><UserFilled /></el-icon>
           </div>
           <div class="stat-info">
-            <div class="stat-number">{{ stats.userRole }}</div>
+            <div class="stat-number">{{ userRole }}</div>
             <div class="stat-label">用户角色</div>
           </div>
         </div>
@@ -62,19 +65,63 @@
 </template>
 
 <script setup>
-import { User, OfficeBuilding, UserFilled } from '@element-plus/icons-vue'
+import { ref, computed, onMounted } from 'vue'
+import { User, OfficeBuilding, UserFilled, Tools } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { loadCompaniesMapping, getCompanyName } from '@/utils/companyMapping'
 
 const userStore = useUserStore()
 
-defineProps({
-  stats: {
-    type: Object,
-    default: () => ({
-      companyName: '未知企业',
-      userRole: '普通用户'
-    })
+// 响应式数据
+const companyName = ref('加载中...')
+const companyLoading = ref(false)
+
+// 计算用户角色
+const userRole = computed(() => {
+  const userInfo = userStore.userInfo
+  if (!userInfo) return '未知'
+  
+  if (userInfo.userType === 2) {
+    return '平台超级管理员'
+  } else if (userInfo.companyRole === 2) {
+    return '企业管理员'
+  } else {
+    return '普通员工'
   }
+})
+
+// 加载企业名称
+const loadCompanyName = async () => {
+  const userInfo = userStore.userInfo
+  
+  if (!userInfo || !userInfo.companyId) {
+    companyName.value = '未分配企业'
+    return
+  }
+  
+  try {
+    companyLoading.value = true
+    
+    // 确保企业映射已加载
+    await loadCompaniesMapping()
+    
+    // 使用通用映射工具获取企业名称
+    companyName.value = getCompanyName(userInfo.companyId)
+    
+    if (companyName.value === '未设置') {
+      companyName.value = '企业信息获取失败'
+    }
+  } catch (error) {
+    console.error('获取企业信息失败:', error)
+    companyName.value = '企业信息获取失败'
+  } finally {
+    companyLoading.value = false
+  }
+}
+
+// 组件挂载时加载企业名称
+onMounted(() => {
+  loadCompanyName()
 })
 
 defineEmits(['navigate'])

@@ -170,6 +170,21 @@ export const updateCompanyMember = (companyId, memberId, data) => {
 }
 
 /**
+ * 切换企业成员状态
+ * @param {number} companyId - 企业ID
+ * @param {number} memberId - 成员ID
+ * @param {number} status - 新状态 (0: 禁用, 1: 正常)
+ * @returns {Promise}
+ */
+export const toggleMemberStatus = (companyId, memberId, status) => {
+  return request({
+    url: `/v1/company/${companyId}/members/${memberId}/status`,
+    method: 'put',
+    data: { status }
+  })
+}
+
+/**
  * 删除企业成员
  * @param {number} companyId - 企业ID
  * @param {number} memberId - 成员ID

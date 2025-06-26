@@ -91,13 +91,8 @@
             >
               取消管理员
             </el-button>
-            <el-button 
-              :type="row.status === 1 ? 'warning' : 'success'" 
-              size="small" 
-              @click="handleToggleStatus(row)"
-            >
-              {{ row.status === 1 ? '禁用' : '启用' }}
-            </el-button>
+
+            
             <el-button 
               type="danger" 
               size="small" 
@@ -192,7 +187,8 @@ import {
   createCompanyMember, 
   updateCompanyMember, 
   updateMemberRole, 
-  deleteCompanyMember 
+  deleteCompanyMember,
+  toggleMemberStatus
 } from '@/api/auth'
 
 const userStore = useUserStore()
@@ -285,9 +281,7 @@ const loadMemberList = async () => {
       size: pagination.size
     }
     
-    console.log('请求企业成员列表，企业ID:', companyId, '参数:', params)
     const response = await getCompanyMembers(companyId, params)
-    console.log('企业成员API响应:', response)
     
     if (response.code === 200) {
       // 过滤掉当前用户，不显示自己
@@ -296,13 +290,10 @@ const loadMemberList = async () => {
       memberList.value = filteredRecords
       pagination.total = response.data.total - 1 // 总数减1，因为过滤掉了自己
       pagination.current = response.data.current
-      console.log('企业成员列表加载成功（已过滤当前用户）:', memberList.value)
     } else {
-      console.error('API返回错误:', response.message)
       ElMessage.error(response.message || '获取成员列表失败')
     }
   } catch (error) {
-    console.error('获取成员列表失败:', error)
     ElMessage.error('获取成员列表失败')
   } finally {
     loading.value = false
@@ -374,7 +365,6 @@ const handlePromoteToAdmin = async (row) => {
       return
     }
     
-    console.log('提升成员为管理员，企业ID:', companyId, '成员ID:', row.id)
     const response = await updateMemberRole(companyId, row.id, { companyRole: 2 })
     
     if (response.code === 200) {
@@ -410,7 +400,6 @@ const handleDemoteToEmployee = async (row) => {
       return
     }
     
-    console.log('取消成员管理员权限，企业ID:', companyId, '成员ID:', row.id)
     const response = await updateMemberRole(companyId, row.id, { companyRole: 1 })
     
     if (response.code === 200) {
@@ -447,25 +436,36 @@ const handleToggleStatus = async (row) => {
       return
     }
     
+    // 尝试不同的字段名称
     const updateData = {
-      nickname: row.nickname,
-      phoneNumber: row.phoneNumber,
-      email: row.email,
-      gender: row.gender,
       status: row.status === 1 ? 0 : 1
     }
     
-    console.log('切换成员状态，企业ID:', companyId, '成员ID:', row.id, '新状态:', updateData.status)
-    const response = await updateCompanyMember(companyId, row.id, updateData)
+    // 如果上面的格式不工作，尝试其他可能的字段名称
+    const alternativeData = {
+      userStatus: row.status === 1 ? 0 : 1
+    }
+    
+    let response
+    try {
+      response = await updateCompanyMember(companyId, row.id, updateData)
+    } catch (error) {
+      console.log('尝试备用字段名称...')
+      console.log('备用数据:', alternativeData)
+      response = await updateCompanyMember(companyId, row.id, alternativeData)
+    }
+    
     if (response.code === 200) {
       ElMessage.success(`${action}成功`)
       loadMemberList()
     } else {
+      console.error('API返回错误:', response)
       ElMessage.error(response.message || `${action}失败`)
     }
   } catch (error) {
     if (error !== 'cancel') {
       console.error('切换成员状态失败:', error)
+      console.error('错误详情:', error.response?.data)
       ElMessage.error('操作失败')
     }
   }
@@ -490,7 +490,6 @@ const handleDelete = async (row) => {
       return
     }
     
-    console.log('删除成员，企业ID:', companyId, '成员ID:', row.id)
     const response = await deleteCompanyMember(companyId, row.id)
     
     if (response.code === 200) {
@@ -532,11 +531,9 @@ const handleSubmit = async () => {
         gender: memberForm.gender,
         status: memberForm.status
       }
-      console.log('编辑成员，企业ID:', companyId, '成员ID:', memberForm.id, '数据:', updateData)
       response = await updateCompanyMember(companyId, memberForm.id, updateData)
     } else {
       // 创建成员
-      console.log('创建成员，企业ID:', companyId, '数据:', memberForm)
       response = await createCompanyMember(companyId, memberForm)
     }
     
