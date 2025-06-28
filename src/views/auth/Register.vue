@@ -122,7 +122,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { registerUser, getCompanyList } from '@/api/auth'
+import { registerUser } from '@/api/auth'
+import { loadCompaniesMapping, getCompaniesMap } from '@/utils/companyMapping'
 
 const router = useRouter()
 
@@ -182,11 +183,22 @@ const searchCompanies = async (keyword) => {
   
   try {
     companyLoading.value = true
-    const response = await getCompanyList({ keyword, size: 20 })
     
-    // 在前端过滤状态为1的企业
-    const activeCompanies = response.data.records.filter(company => company.status === 1)
-    companyList.value = activeCompanies
+    // 确保企业映射已加载
+    await loadCompaniesMapping()
+    
+    // 从映射中搜索企业
+    const companiesMap = getCompaniesMap()
+    const filteredCompanies = []
+    
+    for (const [id, name] of companiesMap) {
+      if (name.toLowerCase().includes(keyword.toLowerCase())) {
+        filteredCompanies.push({ id, companyName: name })
+      }
+    }
+    
+    // 只显示状态为1的企业（这里假设所有企业都是活跃的）
+    companyList.value = filteredCompanies
   } catch (error) {
     console.error('获取企业列表失败:', error)
   } finally {
@@ -197,11 +209,19 @@ const searchCompanies = async (keyword) => {
 const loadCompanies = async () => {
   try {
     companyLoading.value = true
-    const response = await getCompanyList({ size: 20 })
     
-    // 在前端过滤状态为1的企业
-    const activeCompanies = response.data.records.filter(company => company.status === 1)
-    companyList.value = activeCompanies
+    // 确保企业映射已加载
+    await loadCompaniesMapping()
+    
+    // 从映射中获取所有企业
+    const companiesMap = getCompaniesMap()
+    const allCompanies = []
+    
+    for (const [id, name] of companiesMap) {
+      allCompanies.push({ id, companyName: name })
+    }
+    
+    companyList.value = allCompanies
   } catch (error) {
     console.error('获取企业列表失败:', error)
   } finally {

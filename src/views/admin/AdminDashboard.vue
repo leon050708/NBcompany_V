@@ -1,10 +1,5 @@
 <template>
   <div class="admin-dashboard">
-    <!-- 添加测试信息 -->
-    <div style="position: fixed; top: 10px; left: 10px; background: red; color: black; padding: 10px; z-index: 9999;">
-      平台管理员页面已加载 - {{ new Date().toLocaleTimeString() }}
-    </div>
-    
     <el-container style="height: 100vh;">
       <!-- 侧边栏 -->
       <el-aside width="250px" style="background-color: #304156;">
@@ -47,6 +42,11 @@
             @navigate="handleMenuSelect"
           />
           
+          <!-- 用户管理 -->
+          <UserManagement 
+            v-else-if="currentView === 'users'"
+          />
+          
           <!-- 企业管理 -->
           <CompanyManagement 
             v-else-if="currentView === 'companies'"
@@ -76,9 +76,10 @@ import { ArrowDown } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
 // 导入组件
-import AdminSidebar from '@/components/dashboard/AdminSidebar.vue'
+import AdminSidebar from '@/components/layout/AdminSidebar.vue'
 import AdminOverview from '@/components/dashboard/AdminOverview.vue'
 import CompanyManagement from '@/components/dashboard/CompanyManagement.vue'
+import UserManagement from '@/components/dashboard/UserManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
 
@@ -100,6 +101,7 @@ const stats = reactive({
 const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
+    case 'users': return '用户管理'
     case 'companies': return '企业管理'
     case 'profile': return '个人资料'
     case 'test': return '系统测试'
@@ -139,22 +141,13 @@ const handleCommand = async (command) => {
 
 // 初始化
 onMounted(() => {
-  console.log('=== 平台管理员仪表板初始化 ===')
-  console.log('用户信息:', userStore.userInfo)
-  console.log('用户类型:', userStore.userInfo?.userType)
-  console.log('公司角色:', userStore.userInfo?.companyRole)
-  console.log('是否已登录:', userStore.isLoggedIn)
-  
   // 检查用户权限 - 只允许平台管理员(userType=2)访问
   if (userStore.userInfo?.userType !== 2) {
-    console.log('权限检查失败 - 用户类型:', userStore.userInfo?.userType)
-    console.log('期望: userType=2 (平台管理员)')
     ElMessage.error('权限不足，需要平台管理员权限')
     router.push('/login')
     return
   }
   
-  console.log('权限检查通过，开始加载统计数据')
   // 加载统计数据
   loadStats()
 })

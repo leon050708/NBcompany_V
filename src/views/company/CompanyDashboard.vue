@@ -38,26 +38,13 @@
           <!-- 仪表板概览 -->
           <CompanyOverview 
             v-if="currentView === 'dashboard'"
-            :stats="stats"
             @navigate="handleMenuSelect"
           />
           
-          <!-- 员工管理 -->
-          <div v-else-if="currentView === 'employees'" class="employees-page">
-            <div style="padding: 20px;">
-              <h2>员工管理</h2>
-              <el-card>
-                <template #header>
-                  <span>员工列表</span>
-                </template>
-                <div style="text-align: center; padding: 40px;">
-                  <el-icon size="48" color="#909399"><UserFilled /></el-icon>
-                  <h3 style="margin: 20px 0; color: #909399;">功能开发中...</h3>
-                  <p style="color: #909399;">员工管理功能正在开发中，敬请期待</p>
-                </div>
-              </el-card>
-            </div>
-          </div>
+          <!-- 成员管理 -->
+          <MemberManagement 
+            v-else-if="currentView === 'members'"
+          />
           
           <!-- 个人资料 -->
           <UserProfile 
@@ -82,8 +69,9 @@ import { ArrowDown, UserFilled } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
 // 导入组件
-import CompanySidebar from '@/components/dashboard/CompanySidebar.vue'
+import CompanySidebar from '@/components/layout/CompanySidebar.vue'
 import CompanyOverview from '@/components/dashboard/CompanyOverview.vue'
+import MemberManagement from '@/components/dashboard/MemberManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
 
@@ -93,18 +81,11 @@ const userStore = useUserStore()
 // 响应式数据
 const currentView = ref('dashboard')
 
-// 统计数据
-const stats = reactive({
-  totalEmployees: 0,
-  activeEmployees: 0,
-  companyName: '未知企业'
-})
-
 // 获取页面标题
 const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
-    case 'employees': return '员工管理'
+    case 'members': return '成员管理'
     case 'profile': return '个人资料'
     case 'test': return '系统测试'
     default: return '企业管理系统'
@@ -143,22 +124,13 @@ const handleCommand = async (command) => {
 
 // 初始化
 onMounted(() => {
-  console.log('=== 企业管理员仪表板初始化 ===')
-  console.log('用户信息:', userStore.userInfo)
-  console.log('用户类型:', userStore.userInfo?.userType)
-  console.log('公司角色:', userStore.userInfo?.companyRole)
-  console.log('是否已登录:', userStore.isLoggedIn)
-  
   // 检查用户权限 - 只允许企业管理员(userType=1, companyRole=2)访问
   if (userStore.userInfo?.userType !== 1 || userStore.userInfo?.companyRole !== 2) {
-    console.log('权限检查失败 - 用户类型:', userStore.userInfo?.userType, '公司角色:', userStore.userInfo?.companyRole)
-    console.log('期望: userType=1, companyRole=2 (企业管理员)')
     ElMessage.error('权限不足，需要企业管理员权限')
     router.push('/login')
     return
   }
   
-  console.log('权限检查通过，开始加载统计数据')
   // 加载统计数据
   loadStats()
 })
@@ -166,11 +138,7 @@ onMounted(() => {
 // 加载统计数据
 const loadStats = async () => {
   try {
-    // 这里可以调用API获取统计数据
-    // 暂时使用默认值
-    stats.totalEmployees = 25
-    stats.activeEmployees = 23
-    stats.companyName = userStore.userInfo?.companyName || '未知企业'
+    // CompanyOverview组件现在自己处理员工统计数据
   } catch (error) {
     console.error('加载统计数据失败:', error)
   }

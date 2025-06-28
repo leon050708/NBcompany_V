@@ -33,13 +33,13 @@ const routes = [
   {
     path: '/company-dashboard',
     name: 'CompanyDashboard',
-    component: () => import('@/views/dashboard/CompanyDashboard.vue'),
+    component: () => import('@/views/company/CompanyDashboard.vue'),
     meta: { requiresAuth: true, roles: ['company_admin'] }
   },
   {
     path: '/admin-dashboard',
     name: 'AdminDashboard',
-    component: () => import('@/views/dashboard/AdminDashboard.vue'),
+    component: () => import('@/views/admin/AdminDashboard.vue'),
     meta: { requiresAuth: true, roles: ['admin'] }
   },
   {
@@ -54,6 +54,13 @@ const routes = [
     component: () => import('@/views/dashboard/Test.vue'),
     meta: { requiresAuth: false }
   },
+
+  {
+    path: '/test-page',
+    name: 'TestPage',
+    component: () => import('@/views/TestPage.vue'),
+    meta: { requiresAuth: false }
+  }
 ]
 
 const router = createRouter({

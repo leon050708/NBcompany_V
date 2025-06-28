@@ -38,7 +38,6 @@
           <!-- 仪表板概览 -->
           <CompanyOverview 
             v-if="currentView === 'dashboard'"
-            :stats="stats"
             @navigate="handleMenuSelect"
           />
           
@@ -58,11 +57,11 @@
               </el-card>
             </div>
           </div>
-
           <MeetingManagement v-else-if="currentView === 'meetings/list'" />
           <MeetingApproval v-else-if="currentView === 'meetings/approval'" />
-
+          <NewsManagement v-else-if="currentView === 'news'" />
             <!-- 个人资料 -->
+
           <UserProfile 
             v-else-if="currentView === 'profile'"
           />
@@ -87,6 +86,7 @@ import { useUserStore } from '@/stores/user'
 // 导入组件
 import CompanySidebar from '@/components/layout/CompanySidebar.vue'
 import CompanyOverview from '@/components/dashboard/CompanyOverview.vue'
+import NewsManagement from '@/components/dashboard/NewsManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
 import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
@@ -97,13 +97,6 @@ const userStore = useUserStore()
 // 响应式数据
 const currentView = ref('dashboard')
 
-// 统计数据
-const stats = reactive({
-  totalEmployees: 0,
-  activeEmployees: 0,
-  companyName: '未知企业'
-})
-
 // 获取页面标题
 const getPageTitle = () => {
   switch (currentView.value) {
@@ -111,6 +104,7 @@ const getPageTitle = () => {
     case 'employees': return '员工管理'
     case 'meetings/list': return '会议列表';
     case 'meetings/approval': return '会议审核';
+    case 'news': return '动态管理'
     case 'profile': return '个人资料'
     case 'test': return '系统测试'
     default: return '企业管理系统'
@@ -172,11 +166,8 @@ onMounted(() => {
 // 加载统计数据
 const loadStats = async () => {
   try {
-    // 这里可以调用API获取统计数据
-    // 暂时使用默认值
-    stats.totalEmployees = 25
-    stats.activeEmployees = 23
-    stats.companyName = userStore.userInfo?.companyName || '未知企业'
+    // CompanyOverview组件现在自己处理员工统计数据
+    console.log('统计数据加载完成')
   } catch (error) {
     console.error('加载统计数据失败:', error)
   }

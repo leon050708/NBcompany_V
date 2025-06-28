@@ -78,4 +78,134 @@ export function updateCompanyStatus(companyId, status) {
     method: 'put',
     data: { status }
   })
+}
+
+// ==================== 平台超级管理员接口 ====================
+
+/**
+ * 获取用户列表 (平台超级管理员)
+ * @param {Object} params - 查询参数
+ * @returns {Promise}
+ */
+export const getUsersList = (params = {}) => {
+  return request({
+    url: '/v1/admin/users',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 修改用户信息 (平台超级管理员)
+ * @param {number} userId - 用户ID
+ * @param {Object} data - 用户信息
+ * @returns {Promise}
+ */
+export const updateUser = (userId, data) => {
+  return request({
+    url: `/v1/admin/users/${userId}`,
+    method: 'put',
+    data
+  })
+}
+
+// ==================== 企业管理员接口 ====================
+
+/**
+ * 获取企业成员列表
+ * @param {number} companyId - 企业ID
+ * @param {Object} params - 查询参数
+ * @returns {Promise}
+ */
+export const getCompanyMembers = (companyId, params = {}) => {
+  return request({
+    url: `/v1/company/${companyId}/members`,
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 创建企业成员
+ * @param {number} companyId - 企业ID
+ * @param {Object} data - 成员信息
+ * @returns {Promise}
+ */
+export const createCompanyMember = (companyId, data) => {
+  return request({
+    url: `/v1/company/${companyId}/members`,
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 修改企业成员角色
+ * @param {number} companyId - 企业ID
+ * @param {number} memberId - 成员ID
+ * @param {Object} data - 角色信息
+ * @returns {Promise}
+ */
+export const updateMemberRole = (companyId, memberId, data) => {
+  return request({
+    url: `/v1/company/${companyId}/members/${memberId}/role`,
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 修改企业成员信息
+ * @param {number} companyId - 企业ID
+ * @param {number} memberId - 成员ID
+ * @param {Object} data - 成员信息
+ * @returns {Promise}
+ */
+export const updateCompanyMember = (companyId, memberId, data) => {
+  return request({
+    url: `/v1/company/${companyId}/members/${memberId}`,
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 切换企业成员状态
+ * @param {number} companyId - 企业ID
+ * @param {number} memberId - 成员ID
+ * @param {number} status - 新状态 (0: 禁用, 1: 正常)
+ * @returns {Promise}
+ */
+export const toggleMemberStatus = (companyId, memberId, status) => {
+  return request({
+    url: `/v1/company/${companyId}/members/${memberId}/status`,
+    method: 'put',
+    data: { status }
+  })
+}
+
+/**
+ * 删除企业成员
+ * @param {number} companyId - 企业ID
+ * @param {number} memberId - 成员ID
+ * @returns {Promise}
+ */
+export const deleteCompanyMember = (companyId, memberId) => {
+  return request({
+    url: `/v1/company/${companyId}/members/${memberId}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * 获取企业列表 (平台管理员)
+ * @param {Object} params - 查询参数
+ * @returns {Promise}
+ */
+export const getCompaniesList = (params = {}) => {
+  return request({
+    url: '/v1/companies',
+    method: 'get',
+    params
+  })
 } 

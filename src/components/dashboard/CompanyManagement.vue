@@ -6,7 +6,7 @@
     <div style="margin-bottom: 20px;">
       <el-input
         v-model="searchKeyword"
-        placeholder="请输入企业名称关键词搜索"
+        placeholder="搜索企业名称、管理员姓名或邮箱"
         style="width: 300px; margin-right: 10px;"
         clearable
         @keyup.enter="handleSearch"
@@ -17,26 +17,27 @@
           </el-button>
         </template>
       </el-input>
-      <el-button @click="clearSearch" type="info" size="small" style="margin-right: 10px;">清空搜索</el-button>
-      <el-button @click="showAllCompanies" type="primary" size="small">显示全部</el-button>
+      <el-button @click="clearSearch" style="margin-right: 10px;">清空搜索</el-button>
+      <el-button @click="showAllCompanies" type="primary">显示全部</el-button>
     </div>
     
-    <el-table 
-      :data="companyList" 
-      style="width: 100%"
+    <!-- 企业列表 -->
+    <el-table
+      :data="companyList"
       v-loading="loading"
-      element-loading-text="加载中..."
+      style="width: 100%"
+      border
     >
-      <el-table-column prop="name" label="企业名称" min-width="200" />
-      <el-table-column prop="adminName" label="管理员" width="120" />
-      <el-table-column prop="email" label="联系邮箱" width="180" />
-      <el-table-column prop="phone" label="联系电话" width="130" />
-      <el-table-column prop="createdAt" label="注册时间" width="160">
+      <el-table-column prop="name" label="企业名称" min-width="150" />
+      <el-table-column prop="adminName" label="管理员姓名" min-width="120" />
+      <el-table-column prop="email" label="邮箱" min-width="180" />
+      <el-table-column prop="phone" label="电话" min-width="120" />
+      <el-table-column prop="createdAt" label="注册时间" min-width="150">
         <template #default="scope">
           {{ formatDate(scope.row.createdAt) }}
         </template>
       </el-table-column>
-      <el-table-column prop="status" label="状态" width="120">
+      <el-table-column prop="status" label="状态" width="100">
         <template #default="scope">
           <el-tag :type="getStatusType(scope.row.status)">
             {{ getStatusText(scope.row.status) }}
@@ -231,7 +232,7 @@ const handleSizeChange = async (size) => {
   await loadCompanyList()
 }
 
-// 状态更新操作
+// 审核通过操作
 const approveCompany = async (company) => {
   try {
     await ElMessageBox.confirm(
