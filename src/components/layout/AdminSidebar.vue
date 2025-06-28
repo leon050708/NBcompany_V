@@ -22,6 +22,11 @@
       <span>企业管理</span>
     </el-menu-item>
     
+    <el-menu-item index="news">
+      <el-icon><Document /></el-icon>
+      <span>动态管理</span>
+    </el-menu-item>
+
     <el-menu-item index="profile">
       <el-icon><UserFilled /></el-icon>
       <span>个人资料</span>
@@ -35,7 +40,9 @@
 </template>
 
 <script setup>
-import { DataBoard, User, OfficeBuilding, UserFilled, Tools } from '@element-plus/icons-vue'
+import { computed } from 'vue'
+import { House, User, Tools, OfficeBuilding, Document, DataBoard, User, OfficeBuilding, UserFilled } from '@element-plus/icons-vue'
+
 
 // 定义props
 const props = defineProps({
