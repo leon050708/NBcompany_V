@@ -79,16 +79,32 @@ const fetchPendingMeetings = async () => {
     // 如果是企业管理员，则只查询自己公司下的待审核会议
     // 在调用 getMeetingList 之前
     const userInfo = userStore.userInfo;
+    console.log('=== 会议审核页面调试信息 ===');
+    console.log('当前用户信息:', userInfo);
+    console.log('用户类型:', userInfo.userType);
+    console.log('公司角色:', userInfo.companyRole);
+    console.log('公司ID:', userInfo.companyId);
+    
 // 只有企业管理员(userType=1, companyRole=2)才自动按公司筛选
     if (userInfo.userType === 1 && userInfo.companyRole === 2) {
       params.companyId = userInfo.companyId;
+      console.log('企业管理员模式，添加公司ID筛选:', userInfo.companyId);
     }
 // 对于平台管理员(userType=2)，不添加 companyId，从而查询所有公司的
+    if (userInfo.userType === 2) {
+      console.log('平台管理员模式，查询所有公司的会议');
+    }
 
+    console.log('请求参数:', params);
     const response = await getMeetingList(params);
+    console.log('API响应:', response);
+    
     // 为每一行数据增加一个独立的加载状态，防止点击一个按钮所有按钮都加载
     pendingMeetings.value = response.data.records.map(item => ({...item, reviewing: false}));
     pagination.total = response.data.total;
+    
+    console.log('处理后的会议列表:', pendingMeetings.value);
+    console.log('总数:', pagination.total);
   } catch (error) {
     console.error("加载待审核会议失败:", error);
     ElMessage.error("加载待审核会议列表失败");

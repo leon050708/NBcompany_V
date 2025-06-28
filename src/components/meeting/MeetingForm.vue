@@ -25,7 +25,7 @@
                 placeholder="选择开始时间"
                 style="width: 100%;"
                 format="YYYY-MM-DD HH:mm:ss"
-                value-format="YYYY-MM-DDTHH:mm:ss"
+                value-format="YYYY-MM-DD HH:mm:ss"
             />
           </el-form-item>
         </el-col>
@@ -37,23 +37,42 @@
                 placeholder="选择结束时间"
                 style="width: 100%;"
                 format="YYYY-MM-DD HH:mm:ss"
-                value-format="YYYY-MM-DDTHH:mm:ss"
+                value-format="YYYY-MM-DD HH:mm:ss"
             />
           </el-form-item>
         </el-col>
       </el-row>
+      <el-form-item label="封面图片URL" prop="coverImageUrl">
+        <el-input v-model="form.coverImageUrl" placeholder="请输入封面图片URL（可选）" />
+      </el-form-item>
       <el-form-item label="会议地点" prop="location">
-        <el-input v-model="form.location" placeholder="请输入会议地点" />
+        <el-input v-model="form.location" placeholder="请输入会议地点（可选）" />
       </el-form-item>
       <el-form-item label="主办单位" prop="organizer">
-        <el-input v-model="form.organizer" placeholder="请输入主办单位" />
+        <el-input v-model="form.organizer" placeholder="请输入主办单位（可选）" />
       </el-form-item>
       <el-form-item label="会议内容" prop="content">
         <el-input
             v-model="form.content"
             type="textarea"
-            :rows="5"
-            placeholder="请输入会议内容（支持富文本，此处为简化输入）"
+            :rows="4"
+            placeholder="请输入会议内容（富文本内容）"
+        />
+      </el-form-item>
+      <el-form-item label="会议议程" prop="agenda">
+        <el-input
+            v-model="form.agenda"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入会议议程（可选，富文本）"
+        />
+      </el-form-item>
+      <el-form-item label="演讲者" prop="speakers">
+        <el-input
+            v-model="form.speakers"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入演讲者信息（可选，富文本）"
         />
       </el-form-item>
     </el-form>
@@ -95,16 +114,19 @@ const form = reactive({
   meetingName: '',
   startTime: '',
   endTime: '',
+  coverImageUrl: '',
+  content: '',
   location: '',
   organizer: '',
-  content: '',
+  agenda: '',
+  speakers: '',
 })
 
 const rules = reactive({
   meetingName: [{ required: true, message: '请输入会议名称', trigger: 'blur' }],
   startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
   endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }],
-  location: [{ required: true, message: '请输入会议地点', trigger: 'blur' }],
+  content: [{ required: true, message: '请输入会议内容', trigger: 'blur' }],
 })
 
 watch(() => props.visible, (newVal) => {
@@ -120,9 +142,12 @@ watch(() => props.visible, (newVal) => {
         meetingName: '',
         startTime: '',
         endTime: '',
+        coverImageUrl: '',
+        content: '',
         location: '',
         organizer: '',
-        content: '',
+        agenda: '',
+        speakers: '',
       })
     }
   }
@@ -138,11 +163,25 @@ const handleSubmit = async () => {
     if (!valid) return
 
     loading.value = true
+    
+    // 构建提交数据，只包含有值的字段
+    const submitData = {}
+    Object.keys(form).forEach(key => {
+      if (form[key] !== null && form[key] !== undefined && form[key] !== '') {
+        submitData[key] = form[key]
+      }
+    })
+    
+    // 移除id字段，因为创建时不需要
+    if (!isEditMode.value) {
+      delete submitData.id
+    }
+    
     if (isEditMode.value) {
-      await updateMeeting(form.id, form)
+      await updateMeeting(form.id, submitData)
       ElMessage.success('会议更新成功')
     } else {
-      await createMeeting(form)
+      await createMeeting(submitData)
       ElMessage.success('会议创建成功')
     }
     emit('success')
