@@ -1,17 +1,18 @@
 <template>
   <div class="admin-dashboard">
+    
     <el-container style="height: 100vh;">
       <!-- 侧边栏 -->
       <el-aside width="250px" style="background-color: #304156;">
         <div class="sidebar-header">
           <h3>管理系统</h3>
         </div>
-        <AdminSidebar
-          :current-view="currentView"
+        <AdminSidebar 
+          :current-view="currentView" 
           @menu-select="handleMenuSelect"
         />
       </el-aside>
-
+      
       <!-- 主内容区 -->
       <el-container>
         <el-header style="background-color: #fff; border-bottom: 1px solid #e6e6e6; display: flex; align-items: center; justify-content: space-between;">
@@ -33,31 +34,72 @@
             </el-dropdown>
           </div>
         </el-header>
-
+        
         <el-main style="background-color: #f0f2f5; padding: 0;">
           <!-- 仪表板概览 -->
-          <AdminOverview
+          <AdminOverview 
             v-if="currentView === 'dashboard'"
             :stats="stats"
             @navigate="handleMenuSelect"
           />
-
+          
           <!-- 企业管理 -->
-          <CompanyManagement
+          <CompanyManagement 
             v-else-if="currentView === 'companies'"
             ref="companyManagementRef"
           />
-          <MeetingManagement v-else-if="currentView === 'meetings/list'" />
-          <MeetingApproval v-else-if="currentView === 'meetings/approval'" />
-          <NewsManagement v-else-if="currentView === 'news'" />
-            <!-- 个人资料 -->
-          <UserProfile
+          
+          <!-- 用户管理 -->
+          <UserManagement 
+            v-else-if="currentView === 'users'"
+            ref="userManagementRef"
+          />
+          
+          <!-- 新闻管理 -->
+          <NewsManagement 
+            v-else-if="currentView === 'news'"
+            ref="newsManagementRef"
+          />
+          
+          <!-- 会议管理 -->
+          <MeetingManagement 
+            v-else-if="currentView === 'meetings/list'"
+            ref="meetingManagementRef"
+          />
+          
+          <!-- 会议审核 -->
+          <MeetingApproval 
+            v-else-if="currentView === 'meetings/approval'"
+            ref="meetingApprovalRef"
+          />
+          
+          <!-- 个人资料 -->
+          <UserProfile 
             v-else-if="currentView === 'profile'"
           />
-
+          
           <!-- 测试页面 -->
-          <TestPage
+          <TestPage 
             v-else-if="currentView === 'test'"
+          />
+          
+          <!-- 课程管理 -->
+          <CourseList
+              v-else-if="currentView === 'courses'"
+              @show-detail="showCourseDetail"
+              @show-edit="showCourseEdit"
+              @show-create="showCourseCreate"
+          />
+          <CourseDetail
+              v-else-if="currentView === 'courseDetail'"
+              :courseId="selectedCourseId"
+              @back="currentView = 'courses'"
+              @edit-course="showCourseEdit"
+          />
+          <CourseEdit
+              v-else-if="currentView === 'courseEdit'"
+              :courseId="selectedCourseId"
+              @back="currentView = 'courses'"
           />
         </el-main>
       </el-container>
@@ -71,22 +113,33 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { getCompanyList } from '@/api/auth'
 
 // 导入组件
 import AdminSidebar from '@/components/layout/AdminSidebar.vue'
 import AdminOverview from '@/components/dashboard/AdminOverview.vue'
 import CompanyManagement from '@/components/dashboard/CompanyManagement.vue'
+import UserManagement from '@/components/dashboard/UserManagement.vue'
 import NewsManagement from '@/components/dashboard/NewsManagement.vue'
+import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
+import MeetingApproval from '@/components/dashboard/MeetingApproval.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
-import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
-import MeetingApproval from "@/components/dashboard/MeetingApproval.vue";
+import CourseList from '@/components/course/CourseList.vue'
+import CourseDetail from '@/components/course/CourseDetail.vue'
+import CourseEdit from '@/components/course/CourseEdit.vue'
+
 const router = useRouter()
 const userStore = useUserStore()
 
 // 响应式数据
 const currentView = ref('dashboard')
 const companyManagementRef = ref()
+const userManagementRef = ref()
+const newsManagementRef = ref()
+const meetingManagementRef = ref()
+const meetingApprovalRef = ref()
+const selectedCourseId = ref(null)
 
 // 统计数据
 const stats = reactive({
@@ -100,13 +153,33 @@ const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
     case 'companies': return '企业管理'
-    case 'meetings/list': return '会议列表';
-    case 'meetings/approval': return '会议审核';
+    case 'users': return '用户管理'
+    case 'news': return '新闻管理'
+    case 'meetings/list': return '会议管理'
+    case 'meetings/approval': return '会议审核'
     case 'profile': return '个人资料'
-    case 'news': return '动态管理'
     case 'test': return '系统测试'
+    case 'courses': return '课程列表'
+    case 'courseDetail': return '课程详情'
+    case 'courseEdit': return '课程编辑'
     default: return '管理系统'
   }
+}
+
+// 课程相关方法
+const showCourseDetail = (id) => {
+  selectedCourseId.value = id
+  currentView.value = 'courseDetail'
+}
+
+const showCourseEdit = (id) => {
+  selectedCourseId.value = id
+  currentView.value = 'courseEdit'
+}
+
+const showCourseCreate = () => {
+  selectedCourseId.value = null
+  currentView.value = 'courseEdit'
 }
 
 // 菜单选择处理
@@ -129,7 +202,7 @@ const handleCommand = async (command) => {
           type: 'warning'
         }
       )
-
+      
       userStore.logout()
       router.push('/login')
       ElMessage.success('已退出登录')
@@ -164,13 +237,43 @@ onMounted(() => {
 // 加载统计数据
 const loadStats = async () => {
   try {
-    // 这里可以调用API获取统计数据
-    // 暂时使用默认值
+    console.log('开始加载企业统计数据...')
+    
+    // 调用API获取企业列表
+    const response = await getCompanyList({ 
+      page: 1, 
+      size: 1000 // 获取足够多的数据来计算统计
+    })
+    
+    console.log('企业数据响应:', response)
+    
+    if (response.data && response.data.records) {
+      const companies = response.data.records
+      
+      // 计算统计数据
+      stats.totalCompanies = companies.length
+      stats.pendingCompanies = companies.filter(company => company.status === 0).length
+      stats.suspendedCompanies = companies.filter(company => company.status === 2).length
+      
+      console.log('统计数据计算完成:', {
+        total: stats.totalCompanies,
+        pending: stats.pendingCompanies,
+        suspended: stats.suspendedCompanies
+      })
+    } else {
+      console.warn('企业数据格式异常:', response)
+      // 设置默认值
+      stats.totalCompanies = 0
+      stats.pendingCompanies = 0
+      stats.suspendedCompanies = 0
+    }
+  } catch (error) {
+    console.error('加载统计数据失败:', error)
+    ElMessage.error('加载统计数据失败')
+    // 设置默认值
     stats.totalCompanies = 0
     stats.pendingCompanies = 0
     stats.suspendedCompanies = 0
-  } catch (error) {
-    console.error('加载统计数据失败:', error)
   }
 }
 </script>

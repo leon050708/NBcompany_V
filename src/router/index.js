@@ -33,13 +33,13 @@ const routes = [
   {
     path: '/company-dashboard',
     name: 'CompanyDashboard',
-    component: () => import('@/views/company/CompanyDashboard.vue'),
+    component: () => import('@/views/dashboard/CompanyDashboard.vue'),
     meta: { requiresAuth: true, roles: ['company_admin'] }
   },
   {
     path: '/admin-dashboard',
     name: 'AdminDashboard',
-    component: () => import('@/views/admin/AdminDashboard.vue'),
+    component: () => import('@/views/dashboard/AdminDashboard.vue'),
     meta: { requiresAuth: true, roles: ['admin'] }
   },
   {
@@ -60,6 +60,30 @@ const routes = [
     name: 'TestPage',
     component: () => import('@/views/TestPage.vue'),
     meta: { requiresAuth: false }
+  },
+  {
+    path: '/courses',
+    name: 'CourseList',
+    component: () => import('@/components/course/CourseList.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/courses/:id',
+    name: 'CourseDetail',
+    component: () => import('@/components/course/CourseDetail.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/courses/create',
+    name: 'CourseCreate',
+    component: () => import('@/components/course/CourseEdit.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/courses/edit/:id',
+    name: 'CourseEdit',
+    component: () => import('@/components/course/CourseEdit.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

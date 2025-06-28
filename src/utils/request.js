@@ -29,6 +29,11 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
+    // 如果是文件下载（blob响应），直接返回原始响应
+    if (response.config.responseType === 'blob') {
+      return response
+    }
+    
     const { code, message, data } = response.data
     
     // 如果响应成功
@@ -42,6 +47,12 @@ service.interceptors.response.use(
   },
   error => {
     console.error('响应错误:', error)
+    
+    // 如果是文件下载错误，特殊处理
+    if (error.config?.responseType === 'blob') {
+      ElMessage.error('文件下载失败，请重试')
+      return Promise.reject(error)
+    }
     
     if (error.response) {
       const { status, data } = error.response

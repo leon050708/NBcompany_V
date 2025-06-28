@@ -41,12 +41,38 @@
             @navigate="handleMenuSelect"
           />
           
+          <!-- 行业动态 -->
+          <NewsView 
+            v-else-if="currentView === 'news'"
+          />
+          
+          <!-- 会议列表 -->
+          <MeetingManagement 
+            v-else-if="currentView === 'meetings/list'"
+          />
+          
+          <!-- 课程管理 -->
+          <CourseList
+              v-else-if="currentView === 'courses'"
+              @show-detail="showCourseDetail"
+              @show-edit="showCourseEdit"
+              @show-create="showCourseCreate"
+          />
+          <CourseDetail
+              v-else-if="currentView === 'courseDetail'"
+              :courseId="selectedCourseId"
+              @back="currentView = 'courses'"
+              @edit-course="showCourseEdit"
+          />
+          <CourseEdit
+              v-else-if="currentView === 'courseEdit'"
+              :courseId="selectedCourseId"
+              @back="currentView = 'courses'"
+          />
+          
           <!-- 个人资料 -->
           <UserProfile 
             v-else-if="currentView === 'profile'"
-          />
-          <MeetingManagement
-              v-else-if="currentView === 'meetings/list'"
           />
           
           <!-- 测试页面 -->
@@ -69,23 +95,32 @@ import { useUserStore } from '@/stores/user'
 // 导入组件
 import UserSidebar from '@/components/layout/UserSidebar.vue'
 import UserOverview from '@/components/dashboard/UserOverview.vue'
+import NewsView from '@/components/dashboard/NewsView.vue'
+import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
-import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
+import CourseList from '@/components/course/CourseList.vue'
+import CourseDetail from '@/components/course/CourseDetail.vue'
+import CourseEdit from '@/components/course/CourseEdit.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
 
 // 响应式数据
 const currentView = ref('dashboard')
+const selectedCourseId = ref(null)
 
 // 获取页面标题
 const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
-    case 'profile': return '个人资料'
+    case 'news': return '行业动态'
     case 'meetings/list': return '会议列表'
+    case 'profile': return '个人资料'
     case 'test': return '系统测试'
+    case 'courses': return '课程管理'
+    case 'courseDetail': return '课程详情'
+    case 'courseEdit': return '编辑课程'
     default: return '用户系统'
   }
 }
@@ -118,6 +153,22 @@ const handleCommand = async (command) => {
       // 用户取消退出
     }
   }
+}
+
+// 课程管理相关处理
+const showCourseDetail = (id) => {
+  selectedCourseId.value = id
+  currentView.value = 'courseDetail'
+}
+
+const showCourseEdit = (id) => {
+  selectedCourseId.value = id
+  currentView.value = 'courseEdit'
+}
+
+const showCourseCreate = () => {
+  selectedCourseId.value = null
+  currentView.value = 'courseEdit'
 }
 
 // 初始化

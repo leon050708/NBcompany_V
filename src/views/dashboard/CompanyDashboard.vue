@@ -57,11 +57,45 @@
               </el-card>
             </div>
           </div>
-          <MeetingManagement v-else-if="currentView === 'meetings/list'" />
-          <MeetingApproval v-else-if="currentView === 'meetings/approval'" />
-          <NewsManagement v-else-if="currentView === 'news'" />
-            <!-- 个人资料 -->
-
+          
+          <!-- 新闻管理 -->
+          <NewsManagement 
+            v-else-if="currentView === 'news'"
+            ref="newsManagementRef"
+          />
+          
+          <!-- 会议管理 -->
+          <MeetingManagement 
+            v-else-if="currentView === 'meetings/list'"
+            ref="meetingManagementRef"
+          />
+          
+          <!-- 会议审核 -->
+          <MeetingApproval 
+            v-else-if="currentView === 'meetings/approval'"
+            ref="meetingApprovalRef"
+          />
+          
+          <!-- 课程管理 -->
+          <CourseList
+              v-else-if="currentView === 'courses'"
+              @show-detail="showCourseDetail"
+              @show-edit="showCourseEdit"
+              @show-create="showCourseCreate"
+          />
+          <CourseDetail
+              v-else-if="currentView === 'courseDetail'"
+              :courseId="selectedCourseId"
+              @back="currentView = 'courses'"
+              @edit-course="showCourseEdit"
+          />
+          <CourseEdit
+              v-else-if="currentView === 'courseEdit'"
+              :courseId="selectedCourseId"
+              @back="currentView = 'courses'"
+          />
+          
+          <!-- 个人资料 -->
           <UserProfile 
             v-else-if="currentView === 'profile'"
           />
@@ -86,27 +120,38 @@ import { useUserStore } from '@/stores/user'
 // 导入组件
 import CompanySidebar from '@/components/layout/CompanySidebar.vue'
 import CompanyOverview from '@/components/dashboard/CompanyOverview.vue'
-import NewsManagement from '@/components/dashboard/NewsManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
 import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
-import MeetingApproval from "@/components/dashboard/MeetingApproval.vue";
+import MeetingApproval from '@/components/dashboard/MeetingApproval.vue'
+import CourseList from '@/components/course/CourseList.vue'
+import CourseDetail from '@/components/course/CourseDetail.vue'
+import CourseEdit from '@/components/course/CourseEdit.vue'
+import NewsManagement from '@/components/dashboard/NewsManagement.vue'
+
 const router = useRouter()
 const userStore = useUserStore()
 
 // 响应式数据
 const currentView = ref('dashboard')
+const meetingManagementRef = ref()
+const meetingApprovalRef = ref()
+const selectedCourseId = ref(null)
+const newsManagementRef = ref()
 
 // 获取页面标题
 const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
     case 'employees': return '员工管理'
-    case 'meetings/list': return '会议列表';
-    case 'meetings/approval': return '会议审核';
-    case 'news': return '动态管理'
     case 'profile': return '个人资料'
     case 'test': return '系统测试'
+    case 'meetings/list': return '会议管理'
+    case 'meetings/approval': return '会议审核'
+    case 'courses': return '课程管理'
+    case 'courseDetail': return '课程详情'
+    case 'courseEdit': return '编辑课程'
+    case 'news': return '新闻管理'
     default: return '企业管理系统'
   }
 }
@@ -171,6 +216,21 @@ const loadStats = async () => {
   } catch (error) {
     console.error('加载统计数据失败:', error)
   }
+}
+
+// 课程管理相关处理
+const showCourseDetail = (id) => {
+  selectedCourseId.value = id
+  currentView.value = 'courseDetail'
+}
+
+const showCourseEdit = (id) => {
+  selectedCourseId.value = id
+  currentView.value = 'courseEdit'
+}
+
+const showCourseCreate = () => {
+  currentView.value = 'courseEdit'
 }
 </script>
 

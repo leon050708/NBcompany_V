@@ -5,7 +5,7 @@
 <template>
   <div id="app">
     <router-view />
-  </div>
+    </div>
 </template>
 
 <style>
@@ -30,13 +30,13 @@ html, body {
   height: 100vh;
   margin: 0;
   padding: 0;
-}
+  }
 
 /* 确保Element Plus组件不会产生额外的边距 */
 .el-container {
   margin: 0;
   padding: 0;
-}
+  }
 
 .el-header {
   margin: 0;

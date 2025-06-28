@@ -14,7 +14,7 @@
               <el-input v-model="filters.authorName" placeholder="按作者搜索" clearable />
             </el-form-item>
             <el-form-item v-if="isPlatformAdmin" label="状态">
-              <el-select v-model="filters.status" placeholder="按状态筛选" clearable>
+              <el-select v-model="filters.status" placeholder="按状态筛选" clearable style="width: 150px;">
                 <el-option label="待审核" :value="0" />
                 <el-option label="已发布" :value="1" />
                 <el-option label="未通过" :value="2" />
