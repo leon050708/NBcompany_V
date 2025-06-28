@@ -38,7 +38,6 @@
           <!-- 仪表板概览 -->
           <CompanyOverview 
             v-if="currentView === 'dashboard'"
-            :stats="stats"
             @navigate="handleMenuSelect"
           />
           
@@ -95,13 +94,6 @@ const userStore = useUserStore()
 
 // 响应式数据
 const currentView = ref('dashboard')
-
-// 统计数据
-const stats = reactive({
-  totalEmployees: 0,
-  activeEmployees: 0,
-  companyName: '未知企业'
-})
 
 // 获取页面标题
 const getPageTitle = () => {
@@ -170,11 +162,8 @@ onMounted(() => {
 // 加载统计数据
 const loadStats = async () => {
   try {
-    // 这里可以调用API获取统计数据
-    // 暂时使用默认值
-    stats.totalEmployees = 25
-    stats.activeEmployees = 23
-    stats.companyName = userStore.userInfo?.companyName || '未知企业'
+    // CompanyOverview组件现在自己处理员工统计数据
+    console.log('统计数据加载完成')
   } catch (error) {
     console.error('加载统计数据失败:', error)
   }

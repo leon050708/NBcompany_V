@@ -17,6 +17,7 @@ service.interceptors.request.use(
       // 在请求头中添加token
       config.headers['Authorization'] = `Bearer ${token}`
     }
+    
     return config
   },
   error => {

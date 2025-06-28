@@ -11,7 +11,7 @@
             <el-icon><UserFilled /></el-icon>
           </div>
           <div class="stat-info">
-            <div class="stat-number">{{ stats.totalEmployees }}</div>
+            <div class="stat-number">{{ totalEmployees }}</div>
             <div class="stat-label">总员工数</div>
           </div>
         </div>
@@ -23,7 +23,7 @@
             <el-icon><User /></el-icon>
           </div>
           <div class="stat-info">
-            <div class="stat-number">{{ stats.activeEmployees }}</div>
+            <div class="stat-number">{{ activeEmployees }}</div>
             <div class="stat-label">在职员工</div>
           </div>
         </div>
@@ -35,7 +35,10 @@
             <el-icon><OfficeBuilding /></el-icon>
           </div>
           <div class="stat-info">
-            <div class="stat-number">{{ stats.companyName }}</div>
+            <div class="stat-number">
+              <span v-if="companyLoading">加载中...</span>
+              <span v-else>{{ companyName }}</span>
+            </div>
             <div class="stat-label">企业名称</div>
           </div>
         </div>
@@ -48,9 +51,9 @@
         <span>快速操作</span>
       </template>
       <div class="action-buttons">
-        <el-button type="primary" @click="$emit('navigate', 'employees')">
+        <el-button type="primary" @click="$emit('navigate', 'members')">
           <el-icon><UserFilled /></el-icon>
-          员工管理
+          成员管理
         </el-button>
         <el-button type="success" @click="$emit('navigate', 'profile')">
           <el-icon><User /></el-icon>
@@ -66,18 +69,92 @@
 </template>
 
 <script setup>
-import { UserFilled, User, OfficeBuilding } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
+import { UserFilled, User, OfficeBuilding, Tools } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { loadCompaniesMapping, getCompanyName } from '@/utils/companyMapping'
+import { getCompanyMembers } from '@/api/auth'
 
 const userStore = useUserStore()
+
+// 响应式数据
+const companyName = ref('加载中...')
+const companyLoading = ref(false)
+const totalEmployees = ref(0)
+const activeEmployees = ref(0)
+
+// 加载企业名称
+const loadCompanyName = async () => {
+  const userInfo = userStore.userInfo
+  
+  if (!userInfo || !userInfo.companyId) {
+    companyName.value = '未分配企业'
+    return
+  }
+  
+  try {
+    companyLoading.value = true
+    
+    // 确保企业映射已加载
+    await loadCompaniesMapping()
+    
+    // 使用通用映射工具获取企业名称
+    companyName.value = getCompanyName(userInfo.companyId)
+    
+    if (companyName.value === '未设置') {
+      companyName.value = '企业信息获取失败'
+    }
+  } catch (error) {
+    console.error('获取企业信息失败:', error)
+    companyName.value = '企业信息获取失败'
+  } finally {
+    companyLoading.value = false
+  }
+}
+
+// 加载员工统计数据
+const loadEmployeeStats = async () => {
+  const userInfo = userStore.userInfo
+  
+  if (!userInfo || !userInfo.companyId) {
+    return
+  }
+  
+  try {
+    // 获取企业成员列表
+    const response = await getCompanyMembers(userInfo.companyId, {
+      page: 1,
+      size: 1000 // 获取所有成员
+    })
+    
+    if (response.code === 200) {
+      const members = response.data.records || []
+      
+      // 计算总员工数（排除当前管理员自己）
+      totalEmployees.value = members.filter(member => member.id !== userInfo.id).length
+      
+      // 计算在职员工数（状态为1的成员，排除当前管理员自己）
+      activeEmployees.value = members.filter(member => 
+        member.id !== userInfo.id && member.status === 1
+      ).length
+    }
+  } catch (error) {
+    console.error('获取员工统计数据失败:', error)
+  }
+}
+
+// 组件挂载时加载数据
+onMounted(async () => {
+  await loadCompanyName()
+  await loadEmployeeStats()
+})
 
 defineProps({
   stats: {
     type: Object,
     default: () => ({
       totalEmployees: 0,
-      activeEmployees: 0,
-      companyName: '未知企业'
+      activeEmployees: 0
     })
   }
 })

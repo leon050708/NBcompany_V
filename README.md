@@ -1,84 +1,172 @@
 # 企业管理系统前端
 
-基于 Vue 3 + Element Plus 的企业管理系统前端项目。
+## 项目概述
+这是一个基于 Vue 3 + Element Plus 的企业管理系统前端项目，支持企业注册、用户管理、成员管理等功能。
+
+## 技术栈
+- Vue 3 (Composition API)
+- Element Plus
+- Vue Router
+- Pinia (状态管理)
+- Axios (HTTP 请求)
+- Vite (构建工具)
+
+## 功能模块
+
+### 1. 用户认证
+- 用户登录
+- 企业注册
+- 用户注册
+- Token 管理
+
+### 2. 平台管理员功能
+- 用户管理：查看、编辑、启用/禁用用户
+- 企业名称映射：通过企业列表API获取企业名称，统一显示企业名称而非企业ID
+- 权限控制：只能管理企业用户，不能管理其他平台管理员
+
+### 3. 企业管理员功能
+- 成员管理：添加、编辑、删除企业成员
+- 角色管理：设置/取消企业管理员权限
+- 状态管理：启用/禁用成员账户
+- 权限控制：不能管理自己
+
+### 4. 普通用户功能
+- 个人资料管理
+- 查看企业信息
+
+### 5. 企业名称映射系统
+- **统一映射**: 所有页面都使用统一的企业名称映射工具
+- **自动加载**: 应用启动时自动加载企业列表并建立映射关系
+- **实时更新**: 支持手动刷新企业名称映射
+- **错误处理**: 企业信息获取失败时显示友好提示
+- **缓存机制**: 避免重复请求企业列表API
+
+## API 接口
+
+### 认证相关
+- `POST /api/v1/auth/login` - 用户登录
+- `POST /api/v1/auth/register` - 用户注册
+- `POST /api/v1/auth/company/register` - 企业注册
+
+### 用户管理 (平台管理员)
+- `GET /api/v1/users` - 获取用户列表
+- `PUT /api/v1/users/{id}` - 更新用户信息
+- `GET /api/v1/companies` - 获取企业列表
+
+### 成员管理 (企业管理员)
+- `GET /api/v1/company/members` - 获取企业成员列表
+- `POST /api/v1/company/members` - 添加企业成员
+- `PUT /api/v1/company/members/{id}` - 更新成员信息
+- `PUT /api/v1/company/members/{id}/role` - 更新成员角色
+- `DELETE /api/v1/company/members/{id}` - 删除成员
+
+## 开发环境配置
+
+### 1. 安装依赖
+```bash
+npm install
+```
+
+### 2. 启动开发服务器
+```bash
+npm run dev
+```
+
+### 3. 构建生产版本
+```bash
+npm run build
+```
+
+## 环境变量配置
+
+在项目根目录创建 `.env.local` 文件：
+
+```bash
+# API 基础URL
+VITE_API_BASE_URL=http://localhost:8080/api
+
+# 其他配置
+VITE_APP_TITLE=企业管理系统
+```
 
 ## 项目结构
 
 ```
 src/
-├── api/                    # API 接口
-│   └── auth.js            # 认证相关接口
-├── assets/                 # 静态资源
-├── components/             # 组件
-│   ├── common/            # 通用组件
-│   ├── dashboard/         # 仪表板组件
-│   │   ├── AdminOverview.vue
-│   │   ├── CompanyManagement.vue
-│   │   ├── CompanyOverview.vue
-│   │   ├── TestPage.vue
-│   │   ├── UserOverview.vue
-│   │   └── UserProfile.vue
-│   ├── forms/             # 表单组件
-│   └── layout/            # 布局组件
-│       ├── AdminSidebar.vue
-│       ├── CompanySidebar.vue
-│       └── UserSidebar.vue
-├── constants/              # 常量定义
-│   └── index.js
-├── router/                 # 路由配置
-│   └── index.js
-├── stores/                 # 状态管理
-│   └── user.js
-├── styles/                 # 样式文件
-│   └── index.css
-├── types/                  # 类型定义
-├── utils/                  # 工具函数
-│   └── request.js
-├── views/                  # 页面
-│   ├── auth/              # 认证页面
-│   │   ├── Login.vue
-│   │   ├── Register.vue
-│   │   └── CompanyRegister.vue
-│   └── dashboard/         # 仪表板页面
-│       ├── AdminDashboard.vue
-│       ├── CompanyDashboard.vue
-│       ├── UserDashboard.vue
-│       ├── Profile.vue
-│       └── Test.vue
-├── App.vue
-└── main.js
+├── api/           # API 接口
+├── assets/        # 静态资源
+├── components/    # 组件
+│   ├── common/    # 通用组件
+│   ├── dashboard/ # 仪表板组件
+│   ├── forms/     # 表单组件
+│   └── layout/    # 布局组件
+├── constants/     # 常量定义
+├── router/        # 路由配置
+├── stores/        # 状态管理
+├── styles/        # 样式文件
+├── types/         # 类型定义
+├── utils/         # 工具函数
+│   └── companyMapping.js  # 企业名称映射工具
+└── views/         # 页面组件
 ```
 
-## 功能特性
+## 权限控制
 
-- 🔐 用户认证（登录/注册）
-- 🏢 企业注册
-- 👥 多角色权限管理
-  - 普通用户 (userType=1, companyRole=1)
-  - 企业管理员 (userType=1, companyRole=2)
-  - 平台管理员 (userType=2)
-- 📊 仪表板
-- 👤 个人资料管理
-- 🧪 系统测试功能
+### 平台管理员
+- 可以查看和管理所有企业用户
+- 不能管理其他平台管理员
+- 可以查看企业列表和用户信息
 
-## 开发
+### 企业管理员
+- 只能管理本企业成员
+- 不能管理自己
+- 可以设置/取消其他成员的管理员权限
 
-```bash
-# 安装依赖
-npm install
+### 普通用户
+- 只能查看和编辑自己的信息
+- 不能管理其他用户
 
-# 启动开发服务器
-npm run dev
+## 企业名称映射系统
 
-# 构建生产版本
-npm run build
-```
+### 功能特点
+- **统一管理**: 所有页面使用同一个企业映射工具
+- **自动初始化**: 应用启动时自动加载企业列表
+- **智能缓存**: 避免重复请求API
+- **错误处理**: 网络问题或API错误时显示友好提示
 
-## 技术栈
+### 使用场景
+- 用户管理页面：显示用户所属企业名称
+- 个人资料页面：显示当前用户的企业信息
+- 用户注册页面：企业选择下拉框
+- 成员管理页面：显示成员企业信息
 
-- Vue 3
-- Element Plus
-- Vue Router
-- Pinia
-- Axios
-- Vite
+### 技术实现
+- 使用 `Map` 数据结构存储企业ID到名称的映射
+- 通过 `getCompaniesList` API获取企业列表
+- 提供 `getCompanyName(companyId)` 函数获取企业名称
+- 支持手动刷新映射数据
+
+## 错误处理
+
+系统采用统一的错误处理机制：
+- API 请求失败时显示具体错误信息
+- 网络连接问题提示用户检查网络
+- 权限不足时显示相应提示
+- 表单验证失败显示具体错误
+- 企业信息获取失败时显示"未设置"或"获取失败"
+
+## 注意事项
+
+1. **API 依赖**: 系统完全依赖后端API，确保后端服务正常运行
+2. **Token 管理**: 登录后会自动保存token，API请求会自动携带
+3. **权限验证**: 前端会进行基本的权限验证，但后端也需要进行权限验证
+4. **错误提示**: 所有API调用都有完善的错误处理和用户提示
+5. **企业映射**: 企业名称映射在应用启动时自动加载，确保企业信息正确显示
+
+## 开发说明
+
+- 系统已移除所有模拟数据，只使用真实API
+- 如果API不可用，会显示相应的错误提示
+- 建议在开发时确保后端API服务正常运行
+- 所有组件都包含详细的错误处理和用户反馈
+- 企业名称映射系统确保所有页面都能正确显示企业名称

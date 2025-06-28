@@ -78,7 +78,6 @@ const currentView = ref('dashboard')
 
 // 统计数据
 const stats = reactive({
-  companyName: '未知企业',
   userRole: '普通用户'
 })
 
@@ -148,8 +147,7 @@ onMounted(() => {
 const loadStats = async () => {
   try {
     // 这里可以调用API获取统计数据
-    // 暂时使用默认值
-    stats.companyName = userStore.userInfo?.companyName || '未知企业'
+    // UserOverview组件现在自己处理企业名称显示
     stats.userRole = '普通用户'
   } catch (error) {
     console.error('加载统计数据失败:', error)

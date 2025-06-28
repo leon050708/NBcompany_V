@@ -136,6 +136,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import { getUserProfile, updateUserProfile, updateUserPassword } from '@/api/auth'
+import { loadCompaniesMapping, getCompanyName } from '@/utils/companyMapping'
 
 const userStore = useUserStore()
 
@@ -227,11 +228,14 @@ const loadUserProfile = async () => {
     profileForm.realName = userData.realName || userData.name || ''
     profileForm.email = userData.email || ''
     profileForm.phoneNumber = userData.phoneNumber || userData.phone || ''
-    profileForm.companyName = userData.companyName || ''
     
-    // 如果用户信息中有公司ID，尝试获取公司名称
-    if (userData.companyId && !profileForm.companyName) {
-      profileForm.companyName = userData.companyName || '未知公司'
+    // 如果用户信息中有公司ID，使用企业映射获取公司名称
+    if (userData.companyId) {
+      // 确保企业映射已加载
+      await loadCompaniesMapping()
+      profileForm.companyName = getCompanyName(userData.companyId)
+    } else {
+      profileForm.companyName = '未分配企业'
     }
   } catch (error) {
     console.error('加载用户资料失败:', error)

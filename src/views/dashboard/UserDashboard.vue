@@ -38,7 +38,6 @@
           <!-- 仪表板概览 -->
           <UserOverview 
             v-if="currentView === 'dashboard'"
-            :stats="stats"
             @navigate="handleMenuSelect"
           />
           
@@ -75,12 +74,6 @@ const userStore = useUserStore()
 
 // 响应式数据
 const currentView = ref('dashboard')
-
-// 统计数据
-const stats = reactive({
-  companyName: '未知企业',
-  userRole: '普通用户'
-})
 
 // 获取页面标题
 const getPageTitle = () => {
@@ -148,9 +141,8 @@ onMounted(() => {
 const loadStats = async () => {
   try {
     // 这里可以调用API获取统计数据
-    // 暂时使用默认值
-    stats.companyName = userStore.userInfo?.companyName || '未知企业'
-    stats.userRole = '普通用户'
+    // UserOverview组件现在自己处理企业名称显示
+    console.log('统计数据加载完成')
   } catch (error) {
     console.error('加载统计数据失败:', error)
   }
