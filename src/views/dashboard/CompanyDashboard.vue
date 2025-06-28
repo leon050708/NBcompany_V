@@ -42,21 +42,10 @@
           />
           
           <!-- 员工管理 -->
-          <div v-else-if="currentView === 'employees'" class="employees-page">
-            <div style="padding: 20px;">
-              <h2>员工管理</h2>
-              <el-card>
-                <template #header>
-                  <span>员工列表</span>
-                </template>
-                <div style="text-align: center; padding: 40px;">
-                  <el-icon size="48" color="#909399"><UserFilled /></el-icon>
-                  <h3 style="margin: 20px 0; color: #909399;">功能开发中...</h3>
-                  <p style="color: #909399;">员工管理功能正在开发中，敬请期待</p>
-                </div>
-              </el-card>
-            </div>
-          </div>
+          <MemberManagement 
+            v-else-if="currentView === 'members'"
+            ref="memberManagementRef"
+          />
           
           <!-- 新闻管理 -->
           <NewsManagement 
@@ -128,6 +117,7 @@ import CourseList from '@/components/course/CourseList.vue'
 import CourseDetail from '@/components/course/CourseDetail.vue'
 import CourseEdit from '@/components/course/CourseEdit.vue'
 import NewsManagement from '@/components/dashboard/NewsManagement.vue'
+import MemberManagement from '@/components/dashboard/MemberManagement.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -138,12 +128,13 @@ const meetingManagementRef = ref()
 const meetingApprovalRef = ref()
 const selectedCourseId = ref(null)
 const newsManagementRef = ref()
+const memberManagementRef = ref()
 
 // 获取页面标题
 const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
-    case 'employees': return '员工管理'
+    case 'members': return '员工管理'
     case 'profile': return '个人资料'
     case 'test': return '系统测试'
     case 'meetings/list': return '会议管理'
