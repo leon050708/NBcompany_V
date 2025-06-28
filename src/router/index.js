@@ -54,6 +54,7 @@ const routes = [
     component: () => import('@/views/dashboard/Test.vue'),
     meta: { requiresAuth: false }
   },
+
   {
     path: '/test-page',
     name: 'TestPage',

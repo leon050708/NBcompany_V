@@ -6,12 +6,12 @@
         <div class="sidebar-header">
           <h3>管理系统</h3>
         </div>
-        <AdminSidebar 
-          :current-view="currentView" 
+        <AdminSidebar
+          :current-view="currentView"
           @menu-select="handleMenuSelect"
         />
       </el-aside>
-      
+
       <!-- 主内容区 -->
       <el-container>
         <el-header style="background-color: #fff; border-bottom: 1px solid #e6e6e6; display: flex; align-items: center; justify-content: space-between;">
@@ -33,30 +33,30 @@
             </el-dropdown>
           </div>
         </el-header>
-        
+
         <el-main style="background-color: #f0f2f5; padding: 0;">
           <!-- 仪表板概览 -->
-          <AdminOverview 
+          <AdminOverview
             v-if="currentView === 'dashboard'"
             :stats="stats"
             @navigate="handleMenuSelect"
           />
-          
+
           <!-- 企业管理 -->
-          <CompanyManagement 
+          <CompanyManagement
             v-else-if="currentView === 'companies'"
             ref="companyManagementRef"
           />
-          
+          <MeetingManagement v-else-if="currentView === 'meetings/list'" />
+          <MeetingApproval v-else-if="currentView === 'meetings/approval'" />
           <NewsManagement v-else-if="currentView === 'news'" />
-
-          <!-- 个人资料 -->
-          <UserProfile 
+            <!-- 个人资料 -->
+          <UserProfile
             v-else-if="currentView === 'profile'"
           />
-          
+
           <!-- 测试页面 -->
-          <TestPage 
+          <TestPage
             v-else-if="currentView === 'test'"
           />
         </el-main>
@@ -79,7 +79,8 @@ import CompanyManagement from '@/components/dashboard/CompanyManagement.vue'
 import NewsManagement from '@/components/dashboard/NewsManagement.vue'
 import UserProfile from '@/components/dashboard/UserProfile.vue'
 import TestPage from '@/components/dashboard/TestPage.vue'
-
+import MeetingManagement from '@/components/dashboard/MeetingManagement.vue'
+import MeetingApproval from "@/components/dashboard/MeetingApproval.vue";
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -99,6 +100,8 @@ const getPageTitle = () => {
   switch (currentView.value) {
     case 'dashboard': return '仪表板'
     case 'companies': return '企业管理'
+    case 'meetings/list': return '会议列表';
+    case 'meetings/approval': return '会议审核';
     case 'profile': return '个人资料'
     case 'news': return '动态管理'
     case 'test': return '系统测试'
@@ -126,7 +129,7 @@ const handleCommand = async (command) => {
           type: 'warning'
         }
       )
-      
+
       userStore.logout()
       router.push('/login')
       ElMessage.success('已退出登录')

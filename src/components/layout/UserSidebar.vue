@@ -1,22 +1,27 @@
 <template>
   <el-menu
-    :default-active="activeMenu"
-    class="sidebar-menu"
-    @select="handleMenuSelect"
-    background-color="#304156"
-    text-color="#bfcbd9"
-    active-text-color="#409EFF"
+      :default-active="activeMenu"
+      class="sidebar-menu"
+      @select="handleMenuSelect"
+      background-color="#304156"
+      text-color="#bfcbd9"
+      active-text-color="#409EFF"
   >
     <el-menu-item index="dashboard">
       <el-icon><House /></el-icon>
       <span>仪表板</span>
     </el-menu-item>
-    
+
+    <el-menu-item index="meetings/list">
+      <el-icon><Suitcase /></el-icon>
+      <span>会议列表</span>
+    </el-menu-item>
+
     <el-menu-item index="profile">
       <el-icon><User /></el-icon>
       <span>个人资料</span>
     </el-menu-item>
-    
+
     <el-menu-item index="test">
       <el-icon><Tools /></el-icon>
       <span>测试页面</span>
@@ -26,7 +31,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { House, User, Tools } from '@element-plus/icons-vue'
+import { House, User, Tools, Suitcase } from '@element-plus/icons-vue'
 
 const props = defineProps({
   currentView: {
@@ -34,11 +39,8 @@ const props = defineProps({
     default: 'dashboard'
   }
 })
-
 const emit = defineEmits(['menu-select'])
-
 const activeMenu = computed(() => props.currentView)
-
 const handleMenuSelect = (index) => {
   emit('menu-select', index)
 }
@@ -62,4 +64,4 @@ const handleMenuSelect = (index) => {
 .sidebar-menu .el-menu-item.is-active {
   background-color: #1890ff;
 }
-</style> 
+</style>
