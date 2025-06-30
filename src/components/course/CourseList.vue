@@ -33,11 +33,38 @@
           <el-button @click="resetSearch">重置</el-button>
         </el-form-item>
         <el-form-item style="float: right; margin-left: auto;">
+          <el-button type="info" @click="handleDebug" size="small" class="debug-btn">
+            <el-icon><Refresh /></el-icon>
+            调试
+          </el-button>
           <el-button type="primary" @click="handleCreate">新建课程</el-button>
           <el-button @click="handleExport">导出课程</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="courseStore.courseList" v-loading="courseStore.loading" style="width: 100%">
+        <!-- 调试信息 -->
+        <template #empty>
+          <div class="empty-state">
+            <el-empty description="暂无数据">
+              <template #description>
+                <div class="empty-info">
+                  <p v-if="courseStore.loading" class="loading-text">正在加载中...</p>
+                  <p v-else-if="courseStore.total === 0" class="no-data-text">暂无课程数据</p>
+                  <p v-else class="data-info">数据加载完成，共 {{ courseStore.total }} 条记录</p>
+                  <p class="debug-info">当前列表长度: {{ courseStore.courseList.length }}</p>
+                  <p class="debug-info">当前页码: {{ courseStore.pageNum }}, 每页大小: {{ courseStore.pageSize }}</p>
+                </div>
+              </template>
+              <template #extra>
+                <el-button type="primary" @click="fetchCourses" :loading="courseStore.loading">
+                  <el-icon><Refresh /></el-icon>
+                  刷新数据
+                </el-button>
+              </template>
+            </el-empty>
+          </div>
+        </template>
+        
         <el-table-column prop="id" label="ID" width="60" />
         <el-table-column label="封面" width="80">
           <template #default="scope">
@@ -81,6 +108,7 @@
           :current-page="courseStore.pageNum"
           :page-size="courseStore.pageSize"
           :total="courseStore.total"
+          :hide-on-single-page="false"
           @current-change="handlePageChange"
           @size-change="handlePageSizeChange"
         />
@@ -214,6 +242,23 @@ const handlePageSizeChange = (size) => {
   fetchCourses()
 }
 
+// 调试方法
+const handleDebug = () => {
+  console.log('=== 课程管理调试信息 ===');
+  console.log('用户信息:', userStore.userInfo);
+  console.log('当前数据:', {
+    courseList: courseStore.courseList,
+    total: courseStore.total,
+    loading: courseStore.loading,
+    pageNum: courseStore.pageNum,
+    pageSize: courseStore.pageSize,
+    searchForm: searchForm.value,
+    sortOption: sortOption.value
+  });
+  
+  ElMessage.info(`数据状态: ${courseStore.courseList.length} 条记录，总计 ${courseStore.total} 条`);
+};
+
 // 操作
 const handleView = (row) => {
   emit('show-detail', row.id)
@@ -290,5 +335,52 @@ onMounted(() => {
 <style scoped>
 .course-list-page {
   padding: 24px;
+}
+
+/* 空状态样式 */
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-info {
+  margin-top: 16px;
+}
+
+.loading-text {
+  color: #409eff;
+  font-weight: 500;
+}
+
+.no-data-text {
+  color: #909399;
+  font-weight: 500;
+}
+
+.data-info {
+  color: #67c23a;
+  font-weight: 500;
+}
+
+.debug-info {
+  color: #909399;
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+/* 调试按钮样式 */
+.debug-btn {
+  background: linear-gradient(135deg, #909399 0%, #606266 100%);
+  border: none;
+  color: white;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.debug-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(144, 147, 153, 0.4);
 }
 </style> 
