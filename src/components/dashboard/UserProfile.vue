@@ -20,156 +20,156 @@
     <!-- 主要内容区域 -->
     <div class="main-content">
       <!-- 基本信息卡片 -->
-      <el-card class="profile-card">
-        <template #header>
-          <div class="card-header">
+    <el-card class="profile-card">
+      <template #header>
+        <div class="card-header">
             <div class="header-left">
               <el-icon class="header-icon"><User /></el-icon>
               <span class="header-title">基本信息</span>
             </div>
             <div class="header-actions">
-              <el-button 
-                v-if="!isEditing" 
-                type="primary" 
-                size="small" 
-                @click="startEdit"
+          <el-button 
+            v-if="!isEditing" 
+            type="primary" 
+            size="small" 
+            @click="startEdit"
                 class="action-btn"
-              >
+          >
                 <el-icon><Edit /></el-icon>
-                编辑资料
-              </el-button>
+            编辑资料
+          </el-button>
               <div v-else class="edit-actions">
                 <el-button type="success" size="small" @click="saveProfile" :loading="saving" class="action-btn">
                   <el-icon><Check /></el-icon>
-                  保存
-                </el-button>
+              保存
+            </el-button>
                 <el-button size="small" @click="cancelEdit" class="action-btn cancel-btn">
                   <el-icon><Close /></el-icon>
-                  取消
-                </el-button>
+              取消
+            </el-button>
               </div>
-            </div>
           </div>
-        </template>
-        
-        <el-form 
-          :model="profileForm" 
-          :rules="profileRules" 
-          ref="profileFormRef" 
-          label-width="120px"
-          :disabled="!isEditing"
-          class="profile-form"
-        >
-          <el-row :gutter="24">
-            <el-col :span="12">
-              <el-form-item label="用户名" prop="username">
-                <el-input v-model="profileForm.username" placeholder="请输入用户名" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="真实姓名" prop="realName">
-                <el-input v-model="profileForm.realName" placeholder="请输入真实姓名" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          
-          <el-row :gutter="24">
-            <el-col :span="12">
-              <el-form-item label="邮箱" prop="email">
-                <el-input v-model="profileForm.email" placeholder="请输入邮箱地址" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="手机号码" prop="phoneNumber">
-                <el-input v-model="profileForm.phoneNumber" placeholder="请输入手机号码" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          
-          <el-row :gutter="24">
-            <el-col :span="12">
-              <el-form-item label="公司名称">
-                <el-input v-model="profileForm.companyName" disabled class="disabled-input" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="用户类型">
-                <el-input v-model="userTypeText" disabled class="disabled-input" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </el-card>
+        </div>
+      </template>
       
+      <el-form 
+        :model="profileForm" 
+        :rules="profileRules" 
+        ref="profileFormRef" 
+        label-width="120px"
+        :disabled="!isEditing"
+          class="profile-form"
+      >
+          <el-row :gutter="24">
+          <el-col :span="12">
+            <el-form-item label="用户名" prop="username">
+                <el-input v-model="profileForm.username" placeholder="请输入用户名" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="真实姓名" prop="realName">
+                <el-input v-model="profileForm.realName" placeholder="请输入真实姓名" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        
+          <el-row :gutter="24">
+          <el-col :span="12">
+            <el-form-item label="邮箱" prop="email">
+                <el-input v-model="profileForm.email" placeholder="请输入邮箱地址" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="手机号码" prop="phoneNumber">
+                <el-input v-model="profileForm.phoneNumber" placeholder="请输入手机号码" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        
+          <el-row :gutter="24">
+          <el-col :span="12">
+            <el-form-item label="公司名称">
+                <el-input v-model="profileForm.companyName" disabled class="disabled-input" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="用户类型">
+                <el-input v-model="userTypeText" disabled class="disabled-input" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-card>
+    
       <!-- 修改密码卡片 -->
-      <el-card class="password-card">
-        <template #header>
-          <div class="card-header">
+    <el-card class="password-card">
+      <template #header>
+        <div class="card-header">
             <div class="header-left">
               <el-icon class="header-icon"><Lock /></el-icon>
               <span class="header-title">修改密码</span>
             </div>
             <div class="header-actions">
-              <el-button 
-                v-if="!isChangingPassword" 
-                type="warning" 
-                size="small" 
-                @click="startChangePassword"
+          <el-button 
+            v-if="!isChangingPassword" 
+            type="warning" 
+            size="small" 
+            @click="startChangePassword"
                 class="action-btn"
-              >
+          >
                 <el-icon><Key /></el-icon>
-                修改密码
-              </el-button>
+            修改密码
+          </el-button>
               <div v-else class="edit-actions">
                 <el-button type="success" size="small" @click="savePassword" :loading="changingPassword" class="action-btn">
                   <el-icon><Check /></el-icon>
-                  确认修改
-                </el-button>
+              确认修改
+            </el-button>
                 <el-button size="small" @click="cancelChangePassword" class="action-btn cancel-btn">
                   <el-icon><Close /></el-icon>
-                  取消
-                </el-button>
+              取消
+            </el-button>
               </div>
-            </div>
           </div>
-        </template>
-        
-        <el-form 
-          :model="passwordForm" 
-          :rules="passwordRules" 
-          ref="passwordFormRef" 
-          label-width="120px"
-          :disabled="!isChangingPassword"
+        </div>
+      </template>
+      
+      <el-form 
+        :model="passwordForm" 
+        :rules="passwordRules" 
+        ref="passwordFormRef" 
+        label-width="120px"
+        :disabled="!isChangingPassword"
           class="password-form"
-        >
-          <el-form-item label="当前密码" prop="currentPassword">
-            <el-input 
-              v-model="passwordForm.currentPassword" 
-              type="password" 
-              show-password
+      >
+        <el-form-item label="当前密码" prop="currentPassword">
+          <el-input 
+            v-model="passwordForm.currentPassword" 
+            type="password" 
+            show-password
               placeholder="请输入当前密码"
-            />
-          </el-form-item>
-          
-          <el-form-item label="新密码" prop="newPassword">
-            <el-input 
-              v-model="passwordForm.newPassword" 
-              type="password" 
-              show-password
+          />
+        </el-form-item>
+        
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input 
+            v-model="passwordForm.newPassword" 
+            type="password" 
+            show-password
               placeholder="请输入新密码"
-            />
-          </el-form-item>
-          
-          <el-form-item label="确认新密码" prop="confirmPassword">
-            <el-input 
-              v-model="passwordForm.confirmPassword" 
-              type="password" 
-              show-password
+          />
+        </el-form-item>
+        
+        <el-form-item label="确认新密码" prop="confirmPassword">
+          <el-input 
+            v-model="passwordForm.confirmPassword" 
+            type="password" 
+            show-password
               placeholder="请再次输入新密码"
-            />
-          </el-form-item>
-        </el-form>
-      </el-card>
+          />
+        </el-form-item>
+      </el-form>
+    </el-card>
     </div>
   </div>
 </template>

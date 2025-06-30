@@ -18,15 +18,15 @@
     <!-- 统计卡片 -->
     <div class="stats-section">
       <h2 class="section-title">平台概览</h2>
-      <div class="stats-grid">
+    <div class="stats-grid">
         <div class="stat-card total" @click="$emit('navigate', 'companies')">
-          <div class="stat-content">
+        <div class="stat-content">
             <div class="stat-icon">
-              <el-icon><OfficeBuilding /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-number">{{ stats.totalCompanies }}</div>
-              <div class="stat-label">总企业数</div>
+            <el-icon><OfficeBuilding /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ stats.totalCompanies }}</div>
+            <div class="stat-label">总企业数</div>
               <div class="stat-trend">
                 <el-icon><TrendCharts /></el-icon>
                 <span>较上月 +12%</span>
@@ -35,15 +35,15 @@
           </div>
           <div class="stat-decoration"></div>
         </div>
-        
+      
         <div class="stat-card pending" @click="$emit('navigate', 'companies')">
-          <div class="stat-content">
+        <div class="stat-content">
             <div class="stat-icon">
-              <el-icon><Clock /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-number">{{ stats.pendingCompanies }}</div>
-              <div class="stat-label">待审核</div>
+            <el-icon><Clock /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ stats.pendingCompanies }}</div>
+            <div class="stat-label">待审核</div>
               <div class="stat-trend urgent">
                 <el-icon><Warning /></el-icon>
                 <span>需要处理</span>
@@ -52,15 +52,15 @@
           </div>
           <div class="stat-decoration"></div>
         </div>
-        
+      
         <div class="stat-card suspended" @click="$emit('navigate', 'companies')">
-          <div class="stat-content">
+        <div class="stat-content">
             <div class="stat-icon">
-              <el-icon><Warning /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-number">{{ stats.suspendedCompanies }}</div>
-              <div class="stat-label">已禁用</div>
+            <el-icon><Warning /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ stats.suspendedCompanies }}</div>
+            <div class="stat-label">已禁用</div>
               <div class="stat-trend">
                 <el-icon><TrendCharts /></el-icon>
                 <span>较上月 -5%</span>
@@ -78,7 +78,7 @@
       <div class="actions-grid">
         <div class="action-card" @click="$emit('navigate', 'companies')">
           <div class="action-icon">
-            <el-icon><OfficeBuilding /></el-icon>
+          <el-icon><OfficeBuilding /></el-icon>
           </div>
           <div class="action-content">
             <h3>企业管理</h3>
@@ -117,7 +117,7 @@
         
         <div class="action-card" @click="$emit('navigate', 'profile')">
           <div class="action-icon">
-            <el-icon><User /></el-icon>
+          <el-icon><User /></el-icon>
           </div>
           <div class="action-content">
             <h3>个人资料</h3>

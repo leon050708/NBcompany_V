@@ -46,62 +46,62 @@
           <div class="login-header">
             <h2>欢迎回来</h2>
             <p>请登录您的账户</p>
-          </div>
-          
-          <el-form
-            ref="loginFormRef"
-            :model="loginForm"
-            :rules="loginRules"
-            class="login-form"
-            @submit.prevent="handleLogin"
-          >
-            <el-form-item prop="username">
-              <el-input
-                v-model="loginForm.username"
-                placeholder="请输入用户名"
-                size="large"
+      </div>
+      
+      <el-form
+        ref="loginFormRef"
+        :model="loginForm"
+        :rules="loginRules"
+        class="login-form"
+        @submit.prevent="handleLogin"
+      >
+        <el-form-item prop="username">
+          <el-input
+            v-model="loginForm.username"
+            placeholder="请输入用户名"
+            size="large"
                 :prefix-icon="User"
                 class="custom-input"
-              />
-            </el-form-item>
-            
-            <el-form-item prop="password">
-              <el-input
-                v-model="loginForm.password"
-                type="password"
-                placeholder="请输入密码"
-                size="large"
+          />
+        </el-form-item>
+        
+        <el-form-item prop="password">
+          <el-input
+            v-model="loginForm.password"
+            type="password"
+            placeholder="请输入密码"
+            size="large"
                 :prefix-icon="Lock"
-                show-password
+            show-password
                 class="custom-input"
-                @keyup.enter="handleLogin"
-              />
-            </el-form-item>
-            
-            <el-form-item>
-              <el-button
-                type="primary"
-                size="large"
-                :loading="loading"
-                class="login-button"
-                @click="handleLogin"
-              >
+            @keyup.enter="handleLogin"
+          />
+        </el-form-item>
+        
+        <el-form-item>
+          <el-button
+            type="primary"
+            size="large"
+            :loading="loading"
+            class="login-button"
+            @click="handleLogin"
+          >
                 <span v-if="!loading">登录</span>
                 <span v-else>登录中...</span>
-              </el-button>
-            </el-form-item>
-          </el-form>
-          
-          <div class="login-footer">
+          </el-button>
+        </el-form-item>
+      </el-form>
+      
+      <div class="login-footer">
             <div class="register-links">
               <el-link type="primary" class="register-link" @click="$router.push('/register')">
                 <el-icon><UserFilled /></el-icon>
                 用户注册
-              </el-link>
+        </el-link>
               <el-link type="primary" class="register-link" @click="$router.push('/company-register')">
                 <el-icon><OfficeBuilding /></el-icon>
-                企业注册
-              </el-link>
+          企业注册
+        </el-link>
             </div>
           </div>
         </div>

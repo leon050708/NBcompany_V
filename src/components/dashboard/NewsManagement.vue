@@ -8,6 +8,10 @@
           <p class="page-subtitle">管理和发布行业动态信息</p>
         </div>
         <div class="header-right">
+          <el-button type="warning" @click="openScrapeDialog" :disabled="loading" class="scrape-button">
+            <el-icon><Scissor /></el-icon>
+            抓取动态
+          </el-button>
           <el-button v-if="canPublish" type="primary" @click="handleCreate" :disabled="loading" class="add-button">
             <el-icon><Plus /></el-icon>
             发布动态
@@ -80,8 +84,8 @@
                 <el-form-item label="作者">
                   <el-input v-model="filters.authorName" placeholder="按作者搜索" clearable />
                 </el-form-item>
-                <el-form-item v-if="isPlatformAdmin" label="状态">
-                  <el-select v-model="filters.status" placeholder="按状态筛选" clearable style="width: 150px;">
+                <el-form-item label="状态">
+                  <el-select v-model="filters.status" placeholder="全部状态" clearable style="width: 120px;">
                     <el-option label="待审核" :value="0" />
                     <el-option label="已发布" :value="1" />
                     <el-option label="未通过" :value="2" />
@@ -107,14 +111,32 @@
           <div class="table-header">
             <h3>动态列表</h3>
             <div class="table-actions">
+              <el-button type="info" @click="handleDebug" size="small" class="debug-btn">
+                <el-icon><Refresh /></el-icon>
+                调试
+              </el-button>
               <el-button type="text" @click="handleRefresh">
                 <el-icon><Refresh /></el-icon>
                 刷新
               </el-button>
             </div>
           </div>
-          
+
           <el-table :data="newsList" v-loading="loading" class="news-table" @sort-change="handleSortChange">
+            <!-- 调试信息 -->
+            <template #empty>
+              <div class="empty-state">
+                <el-empty description="暂无数据">
+                  <template #description>
+                    <p>暂无动态数据</p>
+                    <p v-if="loading">正在加载中...</p>
+                    <p v-else>数据加载完成，共 {{ pagination.total }} 条记录</p>
+                    <p>当前列表长度: {{ newsList.length }}</p>
+                  </template>
+                </el-empty>
+              </div>
+            </template>
+            
             <el-table-column prop="id" label="ID" width="100" sortable="custom" />
             <el-table-column prop="title" label="标题" min-width="200">
               <template #default="scope">
@@ -124,18 +146,13 @@
               </template>
             </el-table-column>
             <el-table-column prop="authorName" label="作者" width="120" />
-            <el-table-column prop="companyName" label="所属企业" width="180" />
+            <el-table-column prop="createdAt" label="创建时间" width="180" sortable="custom" :formatter="formatDate" />
+            <el-table-column prop="viewCount" label="浏览量" width="100" sortable="custom" />
             <el-table-column prop="status" label="状态" width="120">
               <template #default="scope">
                 <el-tag :type="getStatusTagType(scope.row.status)" size="small">
                   {{ getStatusText(scope.row.status) }}
                 </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="viewCount" label="浏览量" width="100" sortable="custom" />
-            <el-table-column prop="createdAt" label="发布时间" width="180" sortable="custom">
-              <template #default="scope">
-                {{ formatDate(scope.row.createdAt) }}
               </template>
             </el-table-column>
             <el-table-column label="操作" width="220" fixed="right">
@@ -224,22 +241,36 @@
           <img :src="selectedNews.coverImageUrl" alt="封面图片" class="cover-image" />
         </div>
 
-        <el-divider />
-        <div v-html="selectedNews.content" class="content-body"></div>
+        <div class="content-body" v-html="selectedNews.content"></div>
       </div>
       <template #footer>
-        <el-button type="primary" @click="detailsDialogVisible = false">关闭</el-button>
+        <el-button @click="detailsDialogVisible = false">关闭</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="scrapeDialogVisible" title="抓取网络动态" width="40%" :close-on-click-modal="false" class="scrape-dialog">
+      <el-form label-width="100px">
+        <el-form-item label="新闻URL">
+          <el-input v-model="scrapeUrl" placeholder="请在此处粘贴新闻页面的网址" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="scrapeDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleScrape" :loading="scrapeLoading">
+          {{ scrapeLoading ? '抓取中...' : '开始抓取' }}
+        </el-button>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Document, Check, Clock, Close, ArrowDown, ArrowUp, Search, Refresh } from '@element-plus/icons-vue'
+import { Plus, Scissor, Document, Check, Clock, Close, ArrowDown, ArrowUp, Search, Refresh } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
-import { getNewsList, createNews, updateNews, deleteNews, auditNews, getNewsDetails } from '@/api/news'
+import { getNewsList, createNews, updateNews, deleteNews, auditNews, getNewsDetails, scrapeNews } from '@/api/news'
 
 // --- 通用响应式数据 ---
 const userStore = useUserStore()
@@ -265,109 +296,158 @@ const rejectedNews = computed(() => {
 
 // --- 编辑/新建弹窗数据 ---
 const editorDialogVisible = ref(false)
-const editorDialogTitle = ref('')
-const editorFormRef = ref(null)
-const editingNewsId = ref(null)
-const editorForm = reactive({ title: '', coverImageUrl: '', summary: '', content: '' })
+const editorDialogTitle = ref('新建动态')
+const editorFormRef = ref()
+const editorForm = reactive({
+  id: null,
+  title: '',
+  coverImageUrl: '',
+  summary: '',
+  content: ''
+})
 const editorRules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-  content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
+  content: [{ required: true, message: '请输入内容', trigger: 'blur' }]
 }
 
 // --- 审核弹窗数据 ---
 const auditDialogVisible = ref(false)
-const auditFormRef = ref(null)
-const auditForm = reactive({ newsId: null, status: 1 })
+const auditFormRef = ref()
+const auditForm = reactive({ status: null })
+const currentAuditNews = ref(null)
 
 // --- 详情弹窗数据 ---
 const detailsDialogVisible = ref(false)
 const selectedNews = ref(null)
 
+// --- 【新增】抓取功能相关数据 ---
+const scrapeDialogVisible = ref(false)
+const scrapeLoading = ref(false)
+const scrapeUrl = ref('')
 
 // --- 权限计算属性 ---
-const userInfo = computed(() => userStore.userInfo)
-const isPlatformAdmin = computed(() => userInfo.value?.userType === 2)
-const isCompanyAdmin = computed(() => userInfo.value?.userType === 1 && userInfo.value?.companyRole === 2)
-const canPublish = computed(() => isPlatformAdmin.value || isCompanyAdmin.value)
-const canEditOrDelete = (newsItem) => {
-  if (isPlatformAdmin.value) return true
-  if (isCompanyAdmin.value) return newsItem.companyId === userInfo.value.companyId
-  return false
-}
+const isPlatformAdmin = computed(() => userStore.userInfo?.userType === 2)
+const canPublish = computed(() => isPlatformAdmin.value || userStore.userInfo?.companyRole === 2)
+const canEditOrDelete = (newsItem) => isPlatformAdmin.value || (userStore.userInfo?.companyRole === 2 && newsItem.authorId === userStore.userInfo.id)
 const canAudit = (newsItem) => isPlatformAdmin.value && newsItem.status === 0
 
-// --- 自定义排序方法 ---
-const sortById = (a, b) => {
-  return Number(a.id) - Number(b.id)
-}
-
-
-// --- 主要方法 ---
+// --- 主要方法 (保持不变) ---
 const loadNewsList = async () => {
   loading.value = true
   try {
-    const params = { page: pagination.currentPage, size: pagination.pageSize, title: filters.title || null, authorName: filters.authorName || null, status: filters.status }
+    const params = {
+      page: pagination.currentPage,
+      size: pagination.pageSize,
+      title: filters.title || undefined,
+      authorName: filters.authorName || undefined,
+      status: filters.status !== null ? filters.status : undefined
+    }
+    console.log('请求参数:', params)
     const response = await getNewsList(params)
-    let data = response.data.list || []
-    data.sort((a, b) => Number(b.id) - Number(a.id));
-    newsList.value = data;
-    pagination.total = response.data.total || 0
+    console.log('API响应:', response)
+    
+    // 处理不同的数据结构
+    if (response.data && response.data.records) {
+      // 如果返回的是 { data: { records: [], total: number } }
+      newsList.value = response.data.records
+      pagination.total = response.data.total
+    } else if (response.data && Array.isArray(response.data)) {
+      // 如果返回的是 { data: [] }
+      newsList.value = response.data
+      pagination.total = response.data.length
+    } else if (response.data && response.data.list) {
+      // 如果返回的是 { data: { list: [], total: number } }
+      newsList.value = response.data.list
+      pagination.total = response.data.total || response.data.list.length
+    } else {
+      // 默认处理
+      newsList.value = response.data || []
+      pagination.total = response.total || response.data?.length || 0
+    }
+    
+    console.log('处理后的数据:', {
+      newsList: newsList.value,
+      total: pagination.total
+    })
   } catch (error) {
-    console.error("加载动态列表失败:", error)
-    ElMessage.error("加载动态列表失败")
+    console.error('获取动态列表失败:', error)
+    ElMessage.error('获取动态列表失败')
+    // 设置默认值
+    newsList.value = []
+    pagination.total = 0
   } finally {
     loading.value = false
   }
 }
 
-const handleSortChange = ({ prop, order }) => {
-    if (!order) {
-        newsList.value.sort((a, b) => Number(b.id) - Number(a.id));
-        return;
-    }
-    newsList.value.sort((a, b) => {
-        let valA = a[prop];
-        let valB = b[prop];
-        if (prop === 'id' || prop === 'viewCount') {
-            valA = Number(valA);
-            valB = Number(valB);
-        } else if (prop === 'createdAt') {
-            valA = new Date(valA).getTime();
-            valB = new Date(valB).getTime();
-        }
-        if (order === 'ascending') {
-            return valA > valB ? 1 : -1;
-        } else {
-            return valA < valB ? 1 : -1;
-        }
-    });
+const handleSearch = () => {
+  pagination.currentPage = 1
+  loadNewsList()
 }
 
-const handleSearch = () => { pagination.currentPage = 1; loadNewsList() }
-const handleReset = () => { Object.assign(filters, { title: '', authorName: '', status: null }); handleSearch() }
-const handleSizeChange = (size) => { pagination.pageSize = size; loadNewsList() }
-const handleCurrentChange = (page) => { pagination.currentPage = page; loadNewsList() }
+const handleReset = () => {
+  Object.assign(filters, { title: '', authorName: '', status: null })
+  pagination.currentPage = 1
+  loadNewsList()
+}
 
-const resetEditorForm = () => { Object.assign(editorForm, { title: '', coverImageUrl: '', summary: '', content: '' }); editingNewsId.value = null }
-const handleCreate = () => { resetEditorForm(); editorDialogTitle.value = '发布新动态'; editorDialogVisible.value = true }
-const handleEdit = (row) => { resetEditorForm(); Object.assign(editorForm, row); editingNewsId.value = row.id; editorDialogTitle.value = `编辑动态 (ID: ${row.id})`; editorDialogVisible.value = true }
+const handleSizeChange = (size) => {
+  pagination.pageSize = size
+  pagination.currentPage = 1
+  loadNewsList()
+}
+
+const handleCurrentChange = (page) => {
+  pagination.currentPage = page
+  loadNewsList()
+}
+
+const handleSortChange = ({ prop, order }) => {
+  // 这里可以添加排序逻辑
+  console.log('排序变化:', prop, order)
+}
+
+const resetEditorForm = () => {
+  Object.assign(editorForm, {
+    id: null,
+    title: '',
+    coverImageUrl: '',
+    summary: '',
+    content: ''
+  })
+  editorFormRef.value?.clearValidate()
+}
+
+const handleCreate = () => {
+  resetEditorForm()
+  editorDialogTitle.value = '新建动态'
+  editorDialogVisible.value = true
+}
+
+const handleEdit = (row) => {
+  Object.assign(editorForm, { ...row })
+  editorDialogTitle.value = '编辑动态'
+  editorDialogVisible.value = true
+}
 
 const handleSave = async () => {
   try {
     await editorFormRef.value.validate()
     saveLoading.value = true
-    if (editingNewsId.value) {
-      await updateNews(editingNewsId.value, editorForm)
-      ElMessage.success('动态更新成功')
+    
+    if (editorForm.id) {
+      await updateNews(editorForm.id, editorForm)
+      ElMessage.success('更新成功')
     } else {
       await createNews(editorForm)
-      ElMessage.success('动态发布成功，请等待审核')
+      ElMessage.success('创建成功')
     }
+    
     editorDialogVisible.value = false
     loadNewsList()
-  } catch(error) {
-    if (error && error.message) ElMessage.error(error.message)
-    console.error("保存失败:", error)
+  } catch (error) {
+    console.error('保存失败:', error)
+    ElMessage.error('保存失败')
   } finally {
     saveLoading.value = false
   }
@@ -375,51 +455,93 @@ const handleSave = async () => {
 
 const handleDelete = async (row) => {
   try {
-    await ElMessageBox.confirm(`确定要删除标题为 "${row.title}" 的动态吗？`, '警告', { type: 'warning' })
+    await ElMessageBox.confirm(`确定删除动态 "${row.title}"?`, '确认删除', { type: 'warning' })
     await deleteNews(row.id)
     ElMessage.success('删除成功')
     loadNewsList()
   } catch (error) {
-    if (error !== 'cancel') ElMessage.error('删除失败')
+    if (error !== 'cancel') {
+      console.error('删除失败:', error)
+      ElMessage.error('删除失败')
+    }
   }
 }
 
 const handleAudit = (row) => {
-  auditForm.newsId = row.id
-  auditForm.status = 1
+  currentAuditNews.value = row
+  auditForm.status = null
   auditDialogVisible.value = true
 }
 
 const confirmAudit = async () => {
-    if (!auditForm.newsId) return;
-    saveLoading.value = true;
-    try {
-        await auditNews(auditForm.newsId, { status: auditForm.status });
-        ElMessage.success('审核操作成功');
-        auditDialogVisible.value = false;
-        loadNewsList();
-    } catch (error) {
-        ElMessage.error('审核操作失败');
-        console.error('审核失败:', error);
-    } finally {
-        saveLoading.value = false;
+  try {
+    if (auditForm.status === null) {
+      ElMessage.warning('请选择审核结果')
+      return
     }
+    
+    saveLoading.value = true
+    await auditNews(currentAuditNews.value.id, { status: auditForm.status })
+    ElMessage.success('审核完成')
+    auditDialogVisible.value = false
+    loadNewsList()
+  } catch (error) {
+    console.error('审核失败:', error)
+    ElMessage.error('审核失败')
+  } finally {
+    saveLoading.value = false
+  }
 }
 
 const handleViewDetails = async (row) => {
-    try {
-        const response = await getNewsDetails(row.id);
-        selectedNews.value = response.data;
-        detailsDialogVisible.value = true;
-    } catch (error) {
-        ElMessage.error("获取动态详情失败");
-        console.error("获取详情失败:", error);
-    }
+  try {
+    const response = await getNewsDetails(row.id)
+    selectedNews.value = response.data
+    detailsDialogVisible.value = true
+  } catch (error) {
+    console.error('获取详情失败:', error)
+    ElMessage.error('获取详情失败')
+  }
 }
 
+// --- 【新增】抓取功能相关方法 ---
+const openScrapeDialog = () => {
+  scrapeUrl.value = ''; // 清空上次的URL
+  scrapeDialogVisible.value = true;
+}
+
+const handleScrape = async () => {
+  if (!scrapeUrl.value.trim()) {
+    ElMessage.warning('请输入要抓取的URL');
+    return;
+  }
+  scrapeLoading.value = true;
+  try {
+    const response = await scrapeNews(scrapeUrl.value);
+    // 检查后端返回的code是否为成功状态（例如200）
+    if (response.code === 200 && response.data) {
+      // 抓取成功，自动填充到新建表单中
+      resetEditorForm(); // 清空表单，确保是新建状态
+      Object.assign(editorForm, response.data); // 将抓取到的数据填充到表单
+      editorDialogTitle.value = '抓取结果预览 (可编辑)'; // 修改弹窗标题
+      editorDialogVisible.value = true; // 打开编辑/新建弹窗
+      scrapeDialogVisible.value = false; // 关闭抓取弹窗
+      ElMessage.success('抓取成功！请预览并保存。');
+    } else {
+      // 处理后端返回的业务错误信息
+      ElMessage.error(response.message || '抓取失败');
+    }
+  } catch (error) {
+    console.error("抓取失败:", error);
+    // error.message通常是axios拦截器处理过的错误信息
+    ElMessage.error(error.message || '抓取失败，请检查URL或联系管理员');
+  } finally {
+    scrapeLoading.value = false;
+  }
+}
 
 // --- 辅助函数 ---
-const formatDate = (dateStr) => dateStr ? new Date(dateStr).toLocaleString() : '-'
+const formatDate = (row, column, cellValue) => cellValue ? new Date(cellValue).toLocaleString() : '-'
 const getStatusText = (status) => ({ 0: '待审核', 1: '已发布', 2: '未通过' })[status] || '未知'
 const getStatusTagType = (status) => ({ 0: 'warning', 1: 'success', 2: 'danger' })[status] || 'info'
 
@@ -431,6 +553,21 @@ const toggleSearchForm = () => {
 // 刷新数据
 const handleRefresh = () => {
   loadNewsList();
+};
+
+// 调试方法
+const handleDebug = () => {
+  console.log('=== 调试信息 ===');
+  console.log('用户信息:', userStore.userInfo);
+  console.log('当前数据:', {
+    newsList: newsList.value,
+    total: pagination.total,
+    loading: loading.value,
+    filters: filters,
+    pagination: pagination
+  });
+  
+  ElMessage.info(`数据状态: ${newsList.value.length} 条记录，总计 ${pagination.total} 条`);
 };
 
 // --- 生命周期钩子 ---
@@ -499,6 +636,25 @@ onMounted(() => {
 
 .header-right {
   flex-shrink: 0;
+  display: flex;
+  gap: 12px;
+}
+
+.scrape-button {
+  background: rgba(255, 193, 7, 0.2);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  backdrop-filter: blur(10px);
+  color: #ffc107;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.scrape-button:hover {
+  background: rgba(255, 193, 7, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
 }
 
 .add-button {
@@ -759,14 +915,16 @@ onMounted(() => {
 /* 对话框样式 */
 .editor-dialog :deep(.el-dialog),
 .audit-dialog :deep(.el-dialog),
-.details-dialog :deep(.el-dialog) {
+.details-dialog :deep(.el-dialog),
+.scrape-dialog :deep(.el-dialog) {
   border-radius: 16px;
   overflow: hidden;
 }
 
 .editor-dialog :deep(.el-dialog__header),
 .audit-dialog :deep(.el-dialog__header),
-.details-dialog :deep(.el-dialog__header) {
+.details-dialog :deep(.el-dialog__header),
+.scrape-dialog :deep(.el-dialog__header) {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 20px 24px;
@@ -774,20 +932,23 @@ onMounted(() => {
 
 .editor-dialog :deep(.el-dialog__title),
 .audit-dialog :deep(.el-dialog__title),
-.details-dialog :deep(.el-dialog__title) {
+.details-dialog :deep(.el-dialog__title),
+.scrape-dialog :deep(.el-dialog__title) {
   color: white;
   font-weight: 600;
 }
 
 .editor-dialog :deep(.el-dialog__body),
 .audit-dialog :deep(.el-dialog__body),
-.details-dialog :deep(.el-dialog__body) {
+.details-dialog :deep(.el-dialog__body),
+.scrape-dialog :deep(.el-dialog__body) {
   padding: 24px;
 }
 
 .editor-dialog :deep(.el-dialog__footer),
 .audit-dialog :deep(.el-dialog__footer),
-.details-dialog :deep(.el-dialog__footer) {
+.details-dialog :deep(.el-dialog__footer),
+.scrape-dialog :deep(.el-dialog__footer) {
   padding: 16px 24px;
   border-top: 1px solid #e5e7eb;
   background: #f9fafb;
@@ -917,6 +1078,16 @@ onMounted(() => {
   .news-title {
     font-size: 20px;
   }
+  
+  .header-right {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .scrape-button,
+  .add-button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -932,10 +1103,6 @@ onMounted(() => {
   
   .header-right {
     align-self: stretch;
-  }
-  
-  .add-button {
-    width: 100%;
   }
 }
 </style>

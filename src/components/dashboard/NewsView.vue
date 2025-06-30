@@ -32,12 +32,12 @@
           <el-collapse-transition>
             <div v-show="showSearchForm" class="search-form-container">
               <el-form :inline="true" :model="filters" @submit.prevent="handleSearch" class="search-form">
-                <el-form-item label="标题">
-                  <el-input v-model="filters.title" placeholder="按标题搜索" clearable />
-                </el-form-item>
-                <el-form-item label="作者">
-                  <el-input v-model="filters.authorName" placeholder="按作者搜索" clearable />
-                </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="filters.title" placeholder="按标题搜索" clearable />
+        </el-form-item>
+        <el-form-item label="作者">
+          <el-input v-model="filters.authorName" placeholder="按作者搜索" clearable />
+        </el-form-item>
                 <el-form-item class="search-buttons">
                   <el-button type="primary" @click="handleSearch" :loading="loading" class="search-btn">
                     <el-icon><Search /></el-icon>
@@ -47,13 +47,13 @@
                     <el-icon><Refresh /></el-icon>
                     重置
                   </el-button>
-                </el-form-item>
-              </el-form>
+        </el-form-item>
+      </el-form>
             </div>
           </el-collapse-transition>
         </div>
 
-        <!-- 动态列表 -->
+    <!-- 动态列表 -->
         <div class="table-section">
           <div class="table-header">
             <h3>动态列表</h3>
@@ -66,32 +66,32 @@
           </div>
           
           <el-table :data="newsList" v-loading="loading" class="news-table" @sort-change="handleSortChange">
-            <el-table-column prop="id" label="ID" width="100" sortable="custom" />
-            <el-table-column prop="title" label="标题" min-width="200">
-              <template #default="scope">
+      <el-table-column prop="id" label="ID" width="100" sortable="custom" />
+      <el-table-column prop="title" label="标题" min-width="200">
+        <template #default="scope">
                 <el-link type="primary" @click="handleViewDetails(scope.row)" class="news-title-link">
                   {{ scope.row.title }}
                 </el-link>
-              </template>
-            </el-table-column>
-            <el-table-column prop="authorName" label="作者" width="120" />
-            <el-table-column prop="companyName" label="所属企业" width="180" />
-            <el-table-column prop="status" label="状态" width="120">
-              <template #default="scope">
+        </template>
+      </el-table-column>
+      <el-table-column prop="authorName" label="作者" width="120" />
+      <el-table-column prop="companyName" label="所属企业" width="180" />
+      <el-table-column prop="status" label="状态" width="120">
+        <template #default="scope">
                 <el-tag :type="getStatusTagType(scope.row.status)" size="small">
-                  {{ getStatusText(scope.row.status) }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="viewCount" label="浏览量" width="100" sortable="custom" />
-            <el-table-column prop="createdAt" label="发布时间" width="180" sortable="custom">
-              <template #default="scope">
-                {{ formatDate(scope.row.createdAt) }}
-              </template>
-            </el-table-column>
-          </el-table>
+            {{ getStatusText(scope.row.status) }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="viewCount" label="浏览量" width="100" sortable="custom" />
+      <el-table-column prop="createdAt" label="发布时间" width="180" sortable="custom">
+        <template #default="scope">
+          {{ formatDate(scope.row.createdAt) }}
+        </template>
+      </el-table-column>
+    </el-table>
 
-          <!-- 分页 -->
+    <!-- 分页 -->
           <div class="pagination-container" v-if="pagination.total > 0">
             <el-pagination
               v-model:current-page="pagination.currentPage"
@@ -249,7 +249,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.news-view {
+.news-view { 
   padding: 24px;
   background: #f8fafc;
   min-height: 100vh;
@@ -362,7 +362,7 @@ onMounted(() => {
 .search-form-container {
   background: #f9fafb;
   border-radius: 12px;
-  padding: 20px;
+  padding: 20px; 
   border: 1px solid #e5e7eb;
 }
 
@@ -476,9 +476,9 @@ onMounted(() => {
 }
 
 /* 分页 */
-.pagination-container {
-  display: flex;
-  justify-content: center;
+.pagination-container { 
+  display: flex; 
+  justify-content: center; 
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid #e5e7eb;

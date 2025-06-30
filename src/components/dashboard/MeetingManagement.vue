@@ -61,7 +61,7 @@
     <!-- 主要内容区域 -->
     <div class="main-content">
       <el-card class="content-card">
-        <div v-if="isPlatformAdmin">
+    <div v-if="isPlatformAdmin">
           <!-- 平台管理员视图 -->
           <div class="search-section">
             <div class="search-header">
@@ -75,34 +75,34 @@
             <el-collapse-transition>
               <div v-show="showSearchForm" class="search-form-container">
                 <el-form :model="searchParams" inline class="search-form">
-                  <el-form-item label="会议名称">
-                    <el-input v-model="searchParams.meetingName" placeholder="会议名称" clearable />
-                  </el-form-item>
-                  <el-form-item label="创建人">
-                    <el-input v-model="searchParams.creatorName" placeholder="创建人姓名" clearable />
-                  </el-form-item>
+          <el-form-item label="会议名称">
+            <el-input v-model="searchParams.meetingName" placeholder="会议名称" clearable />
+          </el-form-item>
+          <el-form-item label="创建人">
+            <el-input v-model="searchParams.creatorName" placeholder="创建人姓名" clearable />
+          </el-form-item>
                   <el-form-item label="所属公司">
-                    <el-select v-model="searchParams.companyId" placeholder="按公司筛选" clearable filterable>
-                      <el-option v-for="company in companyList" :key="company.id" :label="company.companyName" :value="company.id" />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item label="会议日期">
-                    <el-date-picker
-                        v-model="searchParams.dateRange"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        value-format="YYYY-MM-DD"
-                    />
-                  </el-form-item>
+            <el-select v-model="searchParams.companyId" placeholder="按公司筛选" clearable filterable>
+              <el-option v-for="company in companyList" :key="company.id" :label="company.companyName" :value="company.id" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="会议日期">
+            <el-date-picker
+                v-model="searchParams.dateRange"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="YYYY-MM-DD"
+            />
+          </el-form-item>
                   <el-form-item label="状态">
-                    <el-select v-model="searchParams.status" placeholder="全部状态" clearable style="width: 120px;">
-                      <el-option label="待审核" :value="0" />
-                      <el-option label="已发布" :value="1" />
-                      <el-option label="未通过" :value="2" />
-                    </el-select>
-                  </el-form-item>
+            <el-select v-model="searchParams.status" placeholder="全部状态" clearable style="width: 120px;">
+              <el-option label="待审核" :value="0" />
+              <el-option label="已发布" :value="1" />
+              <el-option label="未通过" :value="2" />
+            </el-select>
+          </el-form-item>
                   <el-form-item class="search-buttons">
                     <el-button type="primary" @click="handleSearch" :loading="loading" class="search-btn">
                       <el-icon><Search /></el-icon>
@@ -112,8 +112,8 @@
                       <el-icon><Refresh /></el-icon>
                       重置
                     </el-button>
-                  </el-form-item>
-                </el-form>
+          </el-form-item>
+        </el-form>
               </div>
             </el-collapse-transition>
           </div>
@@ -131,38 +131,38 @@
                   刷新
                 </el-button>
               </div>
-            </div>
+        </div>
             
             <el-table v-loading="loading" :data="meetingList" @selection-change="handleAllSelectionChange" class="meeting-table">
-              <el-table-column type="selection" width="55" />
-              <el-table-column prop="meetingName" label="会议名称" min-width="200" show-overflow-tooltip />
-              <el-table-column prop="companyName" label="所属公司" width="180" />
-              <el-table-column prop="startTime" label="开始时间" width="180" :formatter="formatDateTime" />
-              <el-table-column prop="creatorName" label="创建人" width="120" />
-              <el-table-column prop="status" label="状态" width="120">
+          <el-table-column type="selection" width="55" />
+          <el-table-column prop="meetingName" label="会议名称" min-width="200" show-overflow-tooltip />
+          <el-table-column prop="companyName" label="所属公司" width="180" />
+          <el-table-column prop="startTime" label="开始时间" width="180" :formatter="formatDateTime" />
+          <el-table-column prop="creatorName" label="创建人" width="120" />
+          <el-table-column prop="status" label="状态" width="120">
                 <template #default="scope">
                   <el-tag :type="getStatusType(scope.row.status)" size="small">
                     {{ getStatusText(scope.row.status) }}
                   </el-tag>
                 </template>
-              </el-table-column>
-              <el-table-column prop="location" label="地点" width="150" />
-              <el-table-column prop="organizer" label="主办单位" width="180" />
-              <el-table-column label="操作" width="220" fixed="right">
-                <template #default="scope">
+          </el-table-column>
+          <el-table-column prop="location" label="地点" width="150" />
+          <el-table-column prop="organizer" label="主办单位" width="180" />
+          <el-table-column label="操作" width="220" fixed="right">
+            <template #default="scope">
                   <el-button size="small" @click="handleDetail(scope.row)" class="action-btn">详情</el-button>
                   <el-button size="small" type="primary" @click="handleEdit(scope.row)" class="action-btn">编辑</el-button>
                   <el-button size="small" type="danger" @click="handleDelete(scope.row)" class="action-btn">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
+            </template>
+          </el-table-column>
+        </el-table>
           </div>
-        </div>
+    </div>
 
-        <div v-else>
+    <div v-else>
           <!-- 企业用户视图 -->
           <el-tabs v-model="activeTab" type="border-card" class="meeting-tabs">
-            <el-tab-pane label="我管理的会议" name="managed" v-if="canManage">
+        <el-tab-pane label="我管理的会议" name="managed" v-if="canManage">
               <div class="search-section">
                 <div class="search-header">
                   <h3>搜索筛选</h3>
@@ -175,22 +175,22 @@
                 <el-collapse-transition>
                   <div v-show="showSearchForm" class="search-form-container">
                     <el-form :model="searchParams" inline class="search-form">
-                      <el-form-item label="会议名称">
-                        <el-input v-model="searchParams.meetingName" placeholder="会议名称" clearable />
-                      </el-form-item>
-                      <el-form-item label="创建人">
-                        <el-input v-model="searchParams.creatorName" placeholder="创建人姓名" clearable />
-                      </el-form-item>
-                      <el-form-item label="会议日期">
-                        <el-date-picker
-                            v-model="searchParams.dateRange"
-                            type="daterange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            value-format="YYYY-MM-DD"
-                        />
-                      </el-form-item>
+            <el-form-item label="会议名称">
+              <el-input v-model="searchParams.meetingName" placeholder="会议名称" clearable />
+            </el-form-item>
+            <el-form-item label="创建人">
+              <el-input v-model="searchParams.creatorName" placeholder="创建人姓名" clearable />
+            </el-form-item>
+            <el-form-item label="会议日期">
+              <el-date-picker
+                  v-model="searchParams.dateRange"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  value-format="YYYY-MM-DD"
+              />
+            </el-form-item>
                       <el-form-item class="search-buttons">
                         <el-button type="primary" @click="handleSearch" :loading="loading" class="search-btn">
                           <el-icon><Search /></el-icon>
@@ -200,8 +200,8 @@
                           <el-icon><Refresh /></el-icon>
                           重置
                         </el-button>
-                      </el-form-item>
-                    </el-form>
+            </el-form-item>
+          </el-form>
                   </div>
                 </el-collapse-transition>
               </div>
@@ -219,35 +219,35 @@
                       刷新
                     </el-button>
                   </div>
-                </div>
+          </div>
                 
                 <el-table v-loading="loading" :data="managedMeetings" @selection-change="handleManagedSelectionChange" class="meeting-table">
-                  <el-table-column type="selection" width="55" />
-                  <el-table-column prop="meetingName" label="会议名称" min-width="200" show-overflow-tooltip />
-                  <el-table-column prop="location" label="地点" width="150" />
-                  <el-table-column prop="organizer" label="主办单位" width="180" />
-                  <el-table-column prop="startTime" label="开始时间" width="180" :formatter="formatDateTime" />
-                  <el-table-column prop="creatorName" label="创建人" width="120" />
-                  <el-table-column prop="status" label="状态" width="120">
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="meetingName" label="会议名称" min-width="200" show-overflow-tooltip />
+            <el-table-column prop="location" label="地点" width="150" />
+            <el-table-column prop="organizer" label="主办单位" width="180" />
+            <el-table-column prop="startTime" label="开始时间" width="180" :formatter="formatDateTime" />
+            <el-table-column prop="creatorName" label="创建人" width="120" />
+            <el-table-column prop="status" label="状态" width="120">
                     <template #default="scope">
                       <el-tag :type="getStatusType(scope.row.status)" size="small">
                         {{ getStatusText(scope.row.status) }}
                       </el-tag>
                     </template>
-                  </el-table-column>
+            </el-table-column>
                   <el-table-column label="操作" width="300" fixed="right">
                     <template #default="scope">
                       <el-button v-if="scope.row.status === 2" size="small" type="warning" @click="handleResubmit(scope.row)" class="action-btn">重传</el-button>
                       <el-button size="small" @click="handleDetail(scope.row)" class="action-btn">详情</el-button>
                       <el-button size="small" type="primary" @click="handleEdit(scope.row)" class="action-btn">编辑</el-button>
                       <el-button size="small" type="danger" @click="handleDelete(scope.row)" class="action-btn">删除</el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
+            </template>
+            </el-table-column>
+          </el-table>
               </div>
-            </el-tab-pane>
+        </el-tab-pane>
 
-            <el-tab-pane label="全部会议" name="all">
+        <el-tab-pane label="全部会议" name="all">
               <div class="search-section">
                 <div class="search-header">
                   <h3>搜索筛选</h3>
@@ -260,29 +260,29 @@
                 <el-collapse-transition>
                   <div v-show="showSearchForm" class="search-form-container">
                     <el-form :model="searchParams" inline class="search-form">
-                      <el-form-item label="会议名称">
-                        <el-input v-model="searchParams.meetingName" placeholder="会议名称" clearable />
-                      </el-form-item>
-                      <el-form-item label="创建人">
-                        <el-input v-model="searchParams.creatorName" placeholder="创建人姓名" clearable />
-                      </el-form-item>
-                      <el-form-item label="会议日期">
-                        <el-date-picker
-                            v-model="searchParams.dateRange"
-                            type="daterange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            value-format="YYYY-MM-DD"
-                        />
-                      </el-form-item>
-                      <el-form-item label="状态">
-                        <el-select v-model="searchParams.status" placeholder="全部状态" clearable style="width: 120px;">
-                          <el-option label="待审核" :value="0" />
-                          <el-option label="已发布" :value="1" />
-                          <el-option label="未通过" :value="2" />
-                        </el-select>
-                      </el-form-item>
+            <el-form-item label="会议名称">
+              <el-input v-model="searchParams.meetingName" placeholder="会议名称" clearable />
+            </el-form-item>
+            <el-form-item label="创建人">
+              <el-input v-model="searchParams.creatorName" placeholder="创建人姓名" clearable />
+            </el-form-item>
+            <el-form-item label="会议日期">
+              <el-date-picker
+                  v-model="searchParams.dateRange"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  value-format="YYYY-MM-DD"
+              />
+            </el-form-item>
+            <el-form-item label="状态">
+              <el-select v-model="searchParams.status" placeholder="全部状态" clearable style="width: 120px;">
+                <el-option label="待审核" :value="0" />
+                <el-option label="已发布" :value="1" />
+                <el-option label="未通过" :value="2" />
+              </el-select>
+            </el-form-item>
                       <el-form-item class="search-buttons">
                         <el-button type="primary" @click="handleSearch" :loading="loading" class="search-btn">
                           <el-icon><Search /></el-icon>
@@ -292,8 +292,8 @@
                           <el-icon><Refresh /></el-icon>
                           重置
                         </el-button>
-                      </el-form-item>
-                    </el-form>
+            </el-form-item>
+          </el-form>
                   </div>
                 </el-collapse-transition>
               </div>
@@ -310,29 +310,29 @@
                 </div>
                 
                 <el-table v-loading="loading" :data="meetingList" class="meeting-table">
-                  <el-table-column prop="meetingName" label="会议名称" min-width="200" show-overflow-tooltip />
-                  <el-table-column prop="companyName" label="所属公司" width="180" />
-                  <el-table-column prop="location" label="地点" width="150" />
-                  <el-table-column prop="organizer" label="主办单位" width="180" />
-                  <el-table-column prop="startTime" label="开始时间" width="180" :formatter="formatDateTime" />
-                  <el-table-column prop="creatorName" label="创建人" width="120" />
-                  <el-table-column prop="status" label="状态" width="120">
+            <el-table-column prop="meetingName" label="会议名称" min-width="200" show-overflow-tooltip />
+            <el-table-column prop="companyName" label="所属公司" width="180" />
+            <el-table-column prop="location" label="地点" width="150" />
+            <el-table-column prop="organizer" label="主办单位" width="180" />
+            <el-table-column prop="startTime" label="开始时间" width="180" :formatter="formatDateTime" />
+            <el-table-column prop="creatorName" label="创建人" width="120" />
+            <el-table-column prop="status" label="状态" width="120">
                     <template #default="scope">
                       <el-tag :type="getStatusType(scope.row.status)" size="small">
                         {{ getStatusText(scope.row.status) }}
                       </el-tag>
                     </template>
-                  </el-table-column>
-                  <el-table-column label="操作" width="100" fixed="right">
+            </el-table-column>
+            <el-table-column label="操作" width="100" fixed="right">
                     <template #default="scope">
                       <el-button size="small" @click="handleDetail(scope.row)" class="action-btn">详情</el-button>
                     </template>
-                  </el-table-column>
-                </el-table>
+            </el-table-column>
+          </el-table>
               </div>
-            </el-tab-pane>
-          </el-tabs>
-        </div>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
 
         <!-- 分页 -->
         <div class="pagination-container" v-if="pagination.total > 0">
@@ -341,7 +341,7 @@
             :page-size="pagination.size"
             :page-sizes="[10, 20, 50, 100]"
             :total="pagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
+                   layout="total, sizes, prev, pager, next, jumper"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           />
@@ -383,7 +383,7 @@
         </div>
         <div class="detail-item">
           <span class="detail-label">会议内容:</span>
-          <div class="content-box">{{ currentMeeting.content }}</div>
+        <div class="content-box">{{ currentMeeting.content }}</div>
         </div>
       </div>
       <template #footer>

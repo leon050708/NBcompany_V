@@ -18,15 +18,15 @@
     <!-- 统计卡片 -->
     <div class="stats-section">
       <h2 class="section-title">企业概览</h2>
-      <div class="stats-grid">
+    <div class="stats-grid">
         <div class="stat-card total" @click="$emit('navigate', 'members')">
-          <div class="stat-content">
+        <div class="stat-content">
             <div class="stat-icon">
-              <el-icon><UserFilled /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-number">{{ totalEmployees }}</div>
-              <div class="stat-label">总员工数</div>
+            <el-icon><UserFilled /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ totalEmployees }}</div>
+            <div class="stat-label">总员工数</div>
               <div class="stat-trend">
                 <el-icon><TrendCharts /></el-icon>
                 <span>较上月 +5%</span>
@@ -35,15 +35,15 @@
           </div>
           <div class="stat-decoration"></div>
         </div>
-        
+      
         <div class="stat-card active" @click="$emit('navigate', 'members')">
-          <div class="stat-content">
+        <div class="stat-content">
             <div class="stat-icon">
-              <el-icon><User /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-number">{{ activeEmployees }}</div>
-              <div class="stat-label">在职员工</div>
+            <el-icon><User /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ activeEmployees }}</div>
+            <div class="stat-label">在职员工</div>
               <div class="stat-trend">
                 <el-icon><TrendCharts /></el-icon>
                 <span>活跃度 98%</span>
@@ -52,18 +52,18 @@
           </div>
           <div class="stat-decoration"></div>
         </div>
-        
+      
         <div class="stat-card company">
-          <div class="stat-content">
+        <div class="stat-content">
             <div class="stat-icon">
-              <el-icon><OfficeBuilding /></el-icon>
+            <el-icon><OfficeBuilding /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">
+              <span v-if="companyLoading">加载中...</span>
+              <span v-else>{{ companyName }}</span>
             </div>
-            <div class="stat-info">
-              <div class="stat-number">
-                <span v-if="companyLoading">加载中...</span>
-                <span v-else>{{ companyName }}</span>
-              </div>
-              <div class="stat-label">企业名称</div>
+            <div class="stat-label">企业名称</div>
               <div class="stat-trend">
                 <el-icon><CircleCheck /></el-icon>
                 <span>状态正常</span>
@@ -81,7 +81,7 @@
       <div class="actions-grid">
         <div class="action-card" @click="$emit('navigate', 'members')">
           <div class="action-icon">
-            <el-icon><UserFilled /></el-icon>
+          <el-icon><UserFilled /></el-icon>
           </div>
           <div class="action-content">
             <h3>员工管理</h3>
@@ -133,7 +133,7 @@
         
         <div class="action-card" @click="$emit('navigate', 'profile')">
           <div class="action-icon">
-            <el-icon><User /></el-icon>
+          <el-icon><User /></el-icon>
           </div>
           <div class="action-content">
             <h3>个人资料</h3>
@@ -146,7 +146,7 @@
         
         <div class="action-card" @click="$emit('navigate', 'test')">
           <div class="action-icon">
-            <el-icon><Tools /></el-icon>
+          <el-icon><Tools /></el-icon>
           </div>
           <div class="action-content">
             <h3>系统测试</h3>

@@ -74,7 +74,7 @@
           <el-collapse-transition>
             <div v-show="showSearchForm" class="search-form-container">
               <el-form :model="searchParams" inline class="search-form">
-                <el-form-item label="会议名称">
+        <el-form-item label="会议名称">
                   <el-input 
                     v-model="searchParams.meetingName" 
                     placeholder="按会议名称搜索" 
@@ -82,8 +82,8 @@
                     @keyup.enter="fetchPendingMeetings"
                     style="width: 200px;"
                   />
-                </el-form-item>
-                <el-form-item label="申请人">
+        </el-form-item>
+        <el-form-item label="申请人">
                   <el-input 
                     v-model="searchParams.creatorName" 
                     placeholder="按申请人搜索" 
@@ -91,7 +91,7 @@
                     @keyup.enter="fetchPendingMeetings"
                     style="width: 200px;"
                   />
-                </el-form-item>
+        </el-form-item>
                 <el-form-item class="search-buttons">
                   <el-button type="primary" @click="fetchPendingMeetings" :loading="loading" class="search-btn">
                     <el-icon><Search /></el-icon>
@@ -101,8 +101,8 @@
                     <el-icon><Refresh /></el-icon>
                     重置
                   </el-button>
-                </el-form-item>
-              </el-form>
+        </el-form-item>
+      </el-form>
             </div>
           </el-collapse-transition>
         </div>
@@ -118,19 +118,19 @@
               </el-button>
             </div>
           </div>
-          
+
           <el-table :data="pendingMeetings" v-loading="loading" class="meeting-table">
-            <el-table-column prop="meetingName" label="会议名称" min-width="200" show-overflow-tooltip />
-            <el-table-column prop="creatorName" label="申请人" width="120" />
-            <el-table-column prop="companyName" label="所属公司" width="180" />
-            <el-table-column label="申请时间" width="180">
+        <el-table-column prop="meetingName" label="会议名称" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="creatorName" label="申请人" width="120" />
+        <el-table-column prop="companyName" label="所属公司" width="180" />
+        <el-table-column label="申请时间" width="180">
               <template #default="scope">
                 {{ new Date(scope.row.createdAt).toLocaleString() }}
               </template>
-            </el-table-column>
-            <el-table-column label="操作" width="200" fixed="right">
-              <template #default="scope">
-                <template v-if="isPlatformAdmin">
+        </el-table-column>
+        <el-table-column label="操作" width="200" fixed="right">
+          <template #default="scope">
+            <template v-if="isPlatformAdmin">
                   <el-button 
                     size="small" 
                     type="success" 
@@ -149,26 +149,26 @@
                   >
                     驳回
                   </el-button>
-                </template>
+            </template>
                 <span v-else class="no-permission">无操作权限</span>
-              </template>
-            </el-table-column>
-          </el-table>
+          </template>
+        </el-table-column>
+      </el-table>
 
           <!-- 分页 -->
           <div class="pagination-container" v-if="pagination.total > 0">
             <el-pagination
-              :current-page="pagination.current"
-              :page-size="pagination.size"
-              :page-sizes="[10, 20, 50]"
-              :total="pagination.total"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
+                     :current-page="pagination.current"
+                     :page-size="pagination.size"
+                     :page-sizes="[10, 20, 50]"
+                     :total="pagination.total"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+      />
           </div>
         </div>
-      </el-card>
+    </el-card>
     </div>
   </div>
 </template>

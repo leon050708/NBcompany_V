@@ -45,26 +45,26 @@
           <div class="register-header">
             <h2>创建账户</h2>
             <p>填写您的个人信息</p>
-          </div>
-          
-          <el-form
-            ref="registerFormRef"
-            :model="registerForm"
-            :rules="registerRules"
-            class="register-form"
+      </div>
+      
+      <el-form
+        ref="registerFormRef"
+        :model="registerForm"
+        :rules="registerRules"
+        class="register-form"
             label-width="0"
-          >
+      >
             <div class="form-row">
               <el-form-item prop="username" class="form-item">
-                <el-input
-                  v-model="registerForm.username"
+          <el-input
+            v-model="registerForm.username"
                   placeholder="用户名"
-                  size="large"
+            size="large"
                   :prefix-icon="User"
                   class="custom-input"
-                />
-              </el-form-item>
-              
+          />
+        </el-form-item>
+        
               <el-form-item prop="nickname" class="form-item">
                 <el-input
                   v-model="registerForm.nickname"
@@ -78,50 +78,50 @@
             
             <div class="form-row">
               <el-form-item prop="password" class="form-item">
-                <el-input
-                  v-model="registerForm.password"
-                  type="password"
+          <el-input
+            v-model="registerForm.password"
+            type="password"
                   placeholder="密码"
-                  size="large"
+            size="large"
                   :prefix-icon="Lock"
-                  show-password
+            show-password
                   class="custom-input"
-                />
-              </el-form-item>
-              
+          />
+        </el-form-item>
+        
               <el-form-item prop="confirmPassword" class="form-item">
-                <el-input
-                  v-model="registerForm.confirmPassword"
-                  type="password"
+          <el-input
+            v-model="registerForm.confirmPassword"
+            type="password"
                   placeholder="确认密码"
-                  size="large"
+            size="large"
                   :prefix-icon="Lock"
-                  show-password
+            show-password
                   class="custom-input"
-                />
-              </el-form-item>
+          />
+        </el-form-item>
             </div>
             
             <div class="form-row">
               <el-form-item prop="phoneNumber" class="form-item">
-                <el-input
-                  v-model="registerForm.phoneNumber"
+          <el-input
+            v-model="registerForm.phoneNumber"
                   placeholder="手机号码"
-                  size="large"
+            size="large"
                   :prefix-icon="Phone"
                   class="custom-input"
-                />
-              </el-form-item>
-              
+          />
+        </el-form-item>
+        
               <el-form-item prop="email" class="form-item">
-                <el-input
-                  v-model="registerForm.email"
+          <el-input
+            v-model="registerForm.email"
                   placeholder="邮箱地址"
-                  size="large"
+            size="large"
                   :prefix-icon="Message"
                   class="custom-input"
-                />
-              </el-form-item>
+          />
+        </el-form-item>
             </div>
             
             <div class="form-row">
@@ -135,55 +135,55 @@
                     <el-icon><Female /></el-icon>
                     女
                   </el-radio>
-                </el-radio-group>
-              </el-form-item>
+          </el-radio-group>
+        </el-form-item>
             </div>
-            
+        
             <el-form-item prop="companyId" class="company-select-item">
-              <el-select
-                v-model="registerForm.companyId"
-                placeholder="请选择所属企业"
-                size="large"
-                filterable
-                remote
-                :remote-method="searchCompanies"
-                :loading="companyLoading"
+          <el-select
+            v-model="registerForm.companyId"
+            placeholder="请选择所属企业"
+            size="large"
+            filterable
+            remote
+            :remote-method="searchCompanies"
+            :loading="companyLoading"
                 class="custom-select"
-                @change="handleCompanyChange"
-              >
-                <el-option
-                  v-for="company in companyList"
-                  :key="company.id"
-                  :label="company.companyName"
-                  :value="company.id"
-                />
-              </el-select>
-            </el-form-item>
-            
-            <el-form-item>
-              <el-button
-                type="primary"
-                size="large"
-                :loading="loading"
-                class="register-button"
-                @click="handleRegister"
-              >
+            @change="handleCompanyChange"
+          >
+            <el-option
+              v-for="company in companyList"
+              :key="company.id"
+              :label="company.companyName"
+              :value="company.id"
+            />
+          </el-select>
+        </el-form-item>
+        
+        <el-form-item>
+          <el-button
+            type="primary"
+            size="large"
+            :loading="loading"
+            class="register-button"
+            @click="handleRegister"
+          >
                 <span v-if="!loading">创建账户</span>
                 <span v-else>注册中...</span>
-              </el-button>
-            </el-form-item>
-          </el-form>
-          
-          <div class="register-footer">
+          </el-button>
+        </el-form-item>
+      </el-form>
+      
+      <div class="register-footer">
             <div class="login-links">
               <el-link type="primary" class="login-link" @click="$router.push('/login')">
                 <el-icon><ArrowLeft /></el-icon>
                 返回登录
-              </el-link>
+        </el-link>
               <el-link type="primary" class="login-link" @click="$router.push('/company-register')">
                 <el-icon><OfficeBuilding /></el-icon>
-                企业注册
-              </el-link>
+          企业注册
+        </el-link>
             </div>
           </div>
         </div>

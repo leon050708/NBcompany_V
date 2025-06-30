@@ -47,81 +47,81 @@
       <div class="register-section">
         <div class="register-card">
           <div class="register-header">
-            <h2>企业注册</h2>
+        <h2>企业注册</h2>
             <p>填写您的企业信息</p>
-          </div>
-          
-          <el-form
-            ref="registerFormRef"
-            :model="registerForm"
-            :rules="registerRules"
-            class="register-form"
+      </div>
+      
+      <el-form
+        ref="registerFormRef"
+        :model="registerForm"
+        :rules="registerRules"
+        class="register-form"
             label-width="0"
-          >
+      >
             <el-form-item prop="companyName">
-              <el-input
-                v-model="registerForm.companyName"
+          <el-input
+            v-model="registerForm.companyName"
                 placeholder="企业名称"
-                size="large"
+            size="large"
                 :prefix-icon="OfficeBuilding"
                 class="custom-input"
-              />
-            </el-form-item>
-            
+          />
+        </el-form-item>
+        
             <el-form-item prop="contactPerson">
-              <el-input
-                v-model="registerForm.contactPerson"
+          <el-input
+            v-model="registerForm.contactPerson"
                 placeholder="联系人姓名"
-                size="large"
+            size="large"
                 :prefix-icon="User"
                 class="custom-input"
-              />
-            </el-form-item>
-            
+          />
+        </el-form-item>
+        
             <el-form-item prop="contactPhone">
-              <el-input
-                v-model="registerForm.contactPhone"
+          <el-input
+            v-model="registerForm.contactPhone"
                 placeholder="联系电话"
-                size="large"
+            size="large"
                 :prefix-icon="Phone"
                 class="custom-input"
-              />
-            </el-form-item>
-            
+          />
+        </el-form-item>
+        
             <el-form-item prop="contactEmail">
-              <el-input
-                v-model="registerForm.contactEmail"
+          <el-input
+            v-model="registerForm.contactEmail"
                 placeholder="联系邮箱"
-                size="large"
+            size="large"
                 :prefix-icon="Message"
                 class="custom-input"
-              />
-            </el-form-item>
-            
-            <el-form-item>
-              <el-button
-                type="primary"
-                size="large"
-                :loading="loading"
-                class="register-button"
-                @click="handleRegister"
-              >
+          />
+        </el-form-item>
+        
+        <el-form-item>
+          <el-button
+            type="primary"
+            size="large"
+            :loading="loading"
+            class="register-button"
+            @click="handleRegister"
+          >
                 <span v-if="!loading">提交注册</span>
                 <span v-else>提交中...</span>
-              </el-button>
-            </el-form-item>
-          </el-form>
-          
-          <div class="register-footer">
+          </el-button>
+        </el-form-item>
+      </el-form>
+      
+      <div class="register-footer">
             <div class="login-links">
               <el-link type="primary" class="login-link" @click="$router.push('/login')">
                 <el-icon><ArrowLeft /></el-icon>
                 返回登录
-              </el-link>
+        </el-link>
               <el-link type="primary" class="login-link" @click="$router.push('/register')">
                 <el-icon><UserFilled /></el-icon>
-                用户注册
-              </el-link>
+          用户注册
+        </el-link>
             </div>
           </div>
         </div>

@@ -29,7 +29,7 @@
                   <div class="user-role">{{ getUserRole() }}</div>
                 </div>
                 <div class="dropdown-arrow">
-                  <el-icon><ArrowDown /></el-icon>
+                <el-icon><ArrowDown /></el-icon>
                 </div>
               </div>
               <template #dropdown>
@@ -364,7 +364,7 @@ const getUserRole = () => {
   }
   
   .user-name {
-    font-size: 12px;
+  font-size: 12px;
   }
   
   .user-role {

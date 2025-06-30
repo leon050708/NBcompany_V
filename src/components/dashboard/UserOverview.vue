@@ -18,15 +18,15 @@
     <!-- 统计卡片 -->
     <div class="stats-section">
       <h2 class="section-title">个人信息</h2>
-      <div class="stats-grid">
+    <div class="stats-grid">
         <div class="stat-card user">
-          <div class="stat-content">
+        <div class="stat-content">
             <div class="stat-icon">
-              <el-icon><User /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-number">{{ userStore.userInfo?.username || '用户' }}</div>
-              <div class="stat-label">用户名</div>
+            <el-icon><User /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ userStore.userInfo?.username || '用户' }}</div>
+            <div class="stat-label">用户名</div>
               <div class="stat-trend">
                 <el-icon><CircleCheck /></el-icon>
                 <span>在线状态</span>
@@ -35,18 +35,18 @@
           </div>
           <div class="stat-decoration"></div>
         </div>
-        
+      
         <div class="stat-card company">
-          <div class="stat-content">
+        <div class="stat-content">
             <div class="stat-icon">
-              <el-icon><OfficeBuilding /></el-icon>
+            <el-icon><OfficeBuilding /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">
+              <span v-if="companyLoading">加载中...</span>
+              <span v-else>{{ companyName }}</span>
             </div>
-            <div class="stat-info">
-              <div class="stat-number">
-                <span v-if="companyLoading">加载中...</span>
-                <span v-else>{{ companyName }}</span>
-              </div>
-              <div class="stat-label">所属企业</div>
+            <div class="stat-label">所属企业</div>
               <div class="stat-trend">
                 <el-icon><CircleCheck /></el-icon>
                 <span>已加入</span>
@@ -55,15 +55,15 @@
           </div>
           <div class="stat-decoration"></div>
         </div>
-        
+      
         <div class="stat-card role">
-          <div class="stat-content">
+        <div class="stat-content">
             <div class="stat-icon">
-              <el-icon><UserFilled /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-number">{{ userRole }}</div>
-              <div class="stat-label">用户角色</div>
+            <el-icon><UserFilled /></el-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-number">{{ userRole }}</div>
+            <div class="stat-label">用户角色</div>
               <div class="stat-trend">
                 <el-icon><Lock /></el-icon>
                 <span>权限正常</span>
@@ -81,7 +81,7 @@
       <div class="actions-grid">
         <div class="action-card" @click="$emit('navigate', 'profile')">
           <div class="action-icon">
-            <el-icon><User /></el-icon>
+          <el-icon><User /></el-icon>
           </div>
           <div class="action-content">
             <h3>个人资料</h3>
@@ -133,7 +133,7 @@
         
         <div class="action-card" @click="$emit('navigate', 'test')">
           <div class="action-icon">
-            <el-icon><Tools /></el-icon>
+          <el-icon><Tools /></el-icon>
           </div>
           <div class="action-content">
             <h3>系统测试</h3>

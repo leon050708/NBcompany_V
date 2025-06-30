@@ -61,7 +61,7 @@
     <!-- 主要内容区域 -->
     <div class="main-content">
       <el-card class="content-card">
-        <!-- 搜索表单 -->
+      <!-- 搜索表单 -->
         <div class="search-section">
           <div class="search-header">
             <h3>搜索筛选</h3>
@@ -73,65 +73,65 @@
           
           <el-collapse-transition>
             <div v-show="showSearchForm" class="search-form-container">
-              <el-form :model="searchForm" inline class="search-form">
-                <el-form-item label="企业ID">
-                  <el-input
-                    v-model="searchForm.companyId"
-                    placeholder="请输入企业ID"
-                    clearable
-                    style="width: 150px"
-                  />
-                </el-form-item>
-                <el-form-item label="企业角色">
-                  <el-select v-model="searchForm.companyRole" placeholder="请选择" clearable style="width: 150px">
-                    <el-option label="普通员工" :value="1" />
-                    <el-option label="企业管理员" :value="2" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="用户类型">
-                  <el-select v-model="searchForm.userType" placeholder="请选择" clearable style="width: 150px">
-                    <el-option label="企业用户" :value="1" />
-                    <el-option label="平台超级管理员" :value="2" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="用户名">
-                  <el-input
-                    v-model="searchForm.username"
-                    placeholder="请输入用户名"
-                    clearable
-                    style="width: 150px"
-                  />
-                </el-form-item>
-                <el-form-item label="手机号">
-                  <el-input
-                    v-model="searchForm.phoneNumber"
-                    placeholder="请输入手机号"
-                    clearable
-                    style="width: 150px"
-                  />
-                </el-form-item>
-                <el-form-item label="状态">
-                  <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 150px">
-                    <el-option label="禁用" :value="0" />
-                    <el-option label="正常" :value="1" />
-                  </el-select>
-                </el-form-item>
+      <el-form :model="searchForm" inline class="search-form">
+        <el-form-item label="企业ID">
+          <el-input
+            v-model="searchForm.companyId"
+            placeholder="请输入企业ID"
+            clearable
+            style="width: 150px"
+          />
+        </el-form-item>
+        <el-form-item label="企业角色">
+          <el-select v-model="searchForm.companyRole" placeholder="请选择" clearable style="width: 150px">
+            <el-option label="普通员工" :value="1" />
+            <el-option label="企业管理员" :value="2" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="用户类型">
+          <el-select v-model="searchForm.userType" placeholder="请选择" clearable style="width: 150px">
+            <el-option label="企业用户" :value="1" />
+            <el-option label="平台超级管理员" :value="2" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="用户名">
+          <el-input
+            v-model="searchForm.username"
+            placeholder="请输入用户名"
+            clearable
+            style="width: 150px"
+          />
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input
+            v-model="searchForm.phoneNumber"
+            placeholder="请输入手机号"
+            clearable
+            style="width: 150px"
+          />
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 150px">
+            <el-option label="禁用" :value="0" />
+            <el-option label="正常" :value="1" />
+          </el-select>
+        </el-form-item>
                 <el-form-item class="search-buttons">
                   <el-button type="primary" @click="handleSearch" :loading="loading" class="search-btn">
-                    <el-icon><Search /></el-icon>
-                    搜索
-                  </el-button>
+            <el-icon><Search /></el-icon>
+            搜索
+          </el-button>
                   <el-button @click="handleReset" class="reset-btn">
-                    <el-icon><Refresh /></el-icon>
-                    重置
-                  </el-button>
-                </el-form-item>
-              </el-form>
+            <el-icon><Refresh /></el-icon>
+            重置
+          </el-button>
+        </el-form-item>
+      </el-form>
             </div>
           </el-collapse-transition>
         </div>
 
-        <!-- 用户表格 -->
+      <!-- 用户表格 -->
         <div class="table-section">
           <div class="table-header">
             <h3>用户列表</h3>
@@ -147,89 +147,89 @@
             </div>
           </div>
           
-          <el-table
-            :data="userList"
-            v-loading="loading"
-            style="width: 100%"
-            border
+      <el-table
+        :data="userList"
+        v-loading="loading"
+        style="width: 100%"
+        border
             stripe
             class="user-table"
-          >
-            <!-- <el-table-column prop="id" label="ID" width="80" /> -->
-            <el-table-column prop="username" label="用户名" width="120" />
-            <el-table-column prop="nickname" label="昵称" width="120" />
-            <el-table-column prop="phoneNumber" label="手机号" width="130" />
-            <el-table-column prop="email" label="邮箱" width="180" />
-            <el-table-column prop="gender" label="性别" width="80">
-              <template #default="{ row }">
+      >
+        <!-- <el-table-column prop="id" label="ID" width="80" /> -->
+        <el-table-column prop="username" label="用户名" width="120" />
+        <el-table-column prop="nickname" label="昵称" width="120" />
+        <el-table-column prop="phoneNumber" label="手机号" width="130" />
+        <el-table-column prop="email" label="邮箱" width="180" />
+        <el-table-column prop="gender" label="性别" width="80">
+          <template #default="{ row }">
                 <el-tag :type="row.gender === 1 ? 'primary' : 'success'" size="small">
-                  {{ row.gender === 1 ? '男' : '女' }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="userType" label="用户类型" width="120">
-              <template #default="{ row }">
+              {{ row.gender === 1 ? '男' : '女' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="userType" label="用户类型" width="120">
+          <template #default="{ row }">
                 <el-tag :type="row.userType === 1 ? 'info' : 'danger'" size="small">
-                  {{ row.userType === 1 ? '企业用户' : '平台超级管理员' }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="companyName" label="企业名称" width="150">
-              <template #default="{ row }">
-                <span v-if="row.userType === 1">{{ getCompanyNameById(row.companyId) }}</span>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="companyRole" label="企业角色" width="120">
-              <template #default="{ row }">
+              {{ row.userType === 1 ? '企业用户' : '平台超级管理员' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="companyName" label="企业名称" width="150">
+          <template #default="{ row }">
+            <span v-if="row.userType === 1">{{ getCompanyNameById(row.companyId) }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="companyRole" label="企业角色" width="120">
+          <template #default="{ row }">
                 <el-tag v-if="row.userType === 1" :type="row.companyRole === 1 ? 'warning' : 'success'" size="small">
-                  {{ row.companyRole === 1 ? '普通员工' : '企业管理员' }}
-                </el-tag>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="status" label="状态" width="80">
-              <template #default="{ row }">
+              {{ row.companyRole === 1 ? '普通员工' : '企业管理员' }}
+            </el-tag>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" width="80">
+          <template #default="{ row }">
                 <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">
-                  {{ row.status === 1 ? '正常' : '禁用' }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="createdAt" label="创建时间" width="160" />
-            <el-table-column label="操作" width="280" fixed="right">
-              <template #default="{ row }">
+              {{ row.status === 1 ? '正常' : '禁用' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createdAt" label="创建时间" width="160" />
+        <el-table-column label="操作" width="280" fixed="right">
+          <template #default="{ row }">
                 <el-button type="primary" size="small" @click="handleEdit(row)" class="action-btn">
-                  编辑
-                </el-button>
+              编辑
+            </el-button>
                 <el-button type="success" size="small" @click="handleManagePermission(row)" class="action-btn">
-                  权限管理
-                </el-button>
-                <el-button 
-                  :type="row.status === 1 ? 'warning' : 'success'" 
-                  size="small" 
-                  @click="handleToggleStatus(row)"
+              权限管理
+            </el-button>
+            <el-button 
+              :type="row.status === 1 ? 'warning' : 'success'" 
+              size="small" 
+              @click="handleToggleStatus(row)"
                   class="action-btn"
-                >
-                  {{ row.status === 1 ? '禁用' : '启用' }}
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+            >
+              {{ row.status === 1 ? '禁用' : '启用' }}
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-          <!-- 分页 -->
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="pagination.current"
-              v-model:page-size="pagination.size"
-              :page-sizes="[10, 20, 50, 100]"
-              :total="pagination.total"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
+      <!-- 分页 -->
+      <div class="pagination-container">
+        <el-pagination
+          v-model:current-page="pagination.current"
+          v-model:page-size="pagination.size"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="pagination.total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
           </div>
-        </div>
-      </el-card>
+      </div>
+    </el-card>
     </div>
 
     <!-- 用户编辑对话框 -->

@@ -15,7 +15,7 @@
         </div>
       </div>
     </div>
-
+    
     <!-- 统计卡片 -->
     <div class="stats-section">
       <div class="stats-grid">
@@ -74,20 +74,20 @@
           <el-collapse-transition>
             <div v-show="showSearchForm" class="search-form-container">
               <div class="search-form">
-                <el-input
-                  v-model="searchKeyword"
-                  placeholder="搜索企业名称、管理员姓名或邮箱"
+      <el-input
+        v-model="searchKeyword"
+        placeholder="搜索企业名称、管理员姓名或邮箱"
                   style="width: 300px;"
-                  clearable
-                  @keyup.enter="handleSearch"
+        clearable
+        @keyup.enter="handleSearch"
                   class="search-input"
-                >
-                  <template #append>
+      >
+        <template #append>
                     <el-button @click="handleSearch" class="search-btn">
-                      <el-icon><Search /></el-icon>
-                    </el-button>
-                  </template>
-                </el-input>
+            <el-icon><Search /></el-icon>
+          </el-button>
+        </template>
+      </el-input>
                 <div class="search-buttons">
                   <el-button @click="clearSearch" class="reset-btn">
                     <el-icon><Refresh /></el-icon>
@@ -101,9 +101,9 @@
               </div>
             </div>
           </el-collapse-transition>
-        </div>
-
-        <!-- 企业列表 -->
+    </div>
+    
+    <!-- 企业列表 -->
         <div class="table-section">
           <div class="table-header">
             <h3>企业列表</h3>
@@ -115,76 +115,76 @@
             </div>
           </div>
           
-          <el-table
-            :data="companyList"
-            v-loading="loading"
+    <el-table
+      :data="companyList"
+      v-loading="loading"
             class="company-table"
-            border
+      border
             stripe
-          >
-            <el-table-column prop="name" label="企业名称" min-width="150" />
-            <el-table-column prop="adminName" label="管理员姓名" min-width="120" />
-            <el-table-column prop="email" label="邮箱" min-width="180" />
-            <el-table-column prop="phone" label="电话" min-width="120" />
-            <el-table-column prop="createdAt" label="注册时间" min-width="150">
-              <template #default="scope">
-                {{ formatDate(scope.row.createdAt) }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="status" label="状态" width="100">
-              <template #default="scope">
+    >
+      <el-table-column prop="name" label="企业名称" min-width="150" />
+      <el-table-column prop="adminName" label="管理员姓名" min-width="120" />
+      <el-table-column prop="email" label="邮箱" min-width="180" />
+      <el-table-column prop="phone" label="电话" min-width="120" />
+      <el-table-column prop="createdAt" label="注册时间" min-width="150">
+        <template #default="scope">
+          {{ formatDate(scope.row.createdAt) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="status" label="状态" width="100">
+        <template #default="scope">
                 <el-tag :type="getStatusType(scope.row.status)" size="small">
-                  {{ getStatusText(scope.row.status) }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="200" fixed="right">
-              <template #default="scope">
-                <el-button 
-                  v-if="scope.row.status === 0" 
-                  type="success" 
-                  size="small" 
-                  @click="approveCompany(scope.row)"
-                  :loading="scope.row.updating"
+            {{ getStatusText(scope.row.status) }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="200" fixed="right">
+        <template #default="scope">
+          <el-button 
+            v-if="scope.row.status === 0" 
+            type="success" 
+            size="small" 
+            @click="approveCompany(scope.row)"
+            :loading="scope.row.updating"
                   class="action-btn"
-                >
-                  审核通过
-                </el-button>
-                <el-button 
-                  v-if="scope.row.status === 1" 
-                  type="warning" 
-                  size="small" 
-                  @click="suspendCompany(scope.row)"
-                  :loading="scope.row.updating"
+          >
+            审核通过
+          </el-button>
+          <el-button 
+            v-if="scope.row.status === 1" 
+            type="warning" 
+            size="small" 
+            @click="suspendCompany(scope.row)"
+            :loading="scope.row.updating"
                   class="action-btn"
-                >
-                  禁用
-                </el-button>
-                <el-button 
-                  v-if="scope.row.status === 2" 
-                  type="success" 
-                  size="small" 
-                  @click="activateCompany(scope.row)"
-                  :loading="scope.row.updating"
+          >
+            禁用
+          </el-button>
+          <el-button 
+            v-if="scope.row.status === 2" 
+            type="success" 
+            size="small" 
+            @click="activateCompany(scope.row)"
+            :loading="scope.row.updating"
                   class="action-btn"
-                >
-                  激活
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <!-- 分页 -->
+          >
+            激活
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    
+    <!-- 分页 -->
           <div class="pagination-container" v-if="pagination.total > 0">
-            <el-pagination
-              v-model:current-page="pagination.currentPage"
-              v-model:page-size="pagination.pageSize"
-              :page-sizes="[10, 20, 50, 100]"
-              :total="pagination.total"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
+      <el-pagination
+        v-model:current-page="pagination.currentPage"
+        v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        :total="pagination.total"
+        layout="total, sizes, prev, pager, next, jumper"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
           </div>
         </div>
       </el-card>
