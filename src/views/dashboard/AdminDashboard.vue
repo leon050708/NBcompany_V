@@ -4,9 +4,6 @@
     <el-container style="height: 100vh;">
       <!-- 侧边栏 -->
       <el-aside width="250px" style="background-color: #304156;">
-        <div class="sidebar-header">
-          <h3>管理系统</h3>
-        </div>
         <AdminSidebar 
           :current-view="currentView" 
           @menu-select="handleMenuSelect"
@@ -15,16 +12,27 @@
       
       <!-- 主内容区 -->
       <el-container>
-        <el-header style="background-color: #fff; border-bottom: 1px solid #e6e6e6; display: flex; align-items: center; justify-content: space-between;">
+        <el-header class="dashboard-header">
           <div class="header-left">
             <h2>{{ getPageTitle() }}</h2>
           </div>
           <div class="header-right">
-            <el-dropdown @command="handleCommand">
-              <span class="user-dropdown">
-                {{ userStore.userInfo?.username || '用户' }}
-                <el-icon><ArrowDown /></el-icon>
-              </span>
+            <!-- 用户信息下拉菜单 -->
+            <el-dropdown @command="handleCommand" class="user-dropdown-container">
+              <div class="user-info">
+                <div class="user-avatar">
+                  <el-avatar :size="40" :src="userStore.userInfo?.avatar">
+                    {{ userStore.userInfo?.username?.charAt(0)?.toUpperCase() || 'A' }}
+                  </el-avatar>
+                </div>
+                <div class="user-details">
+                  <div class="user-name">{{ userStore.userInfo?.username || '管理员' }}</div>
+                  <div class="user-role">{{ getUserRole() }}</div>
+                </div>
+                <div class="dropdown-arrow">
+                  <el-icon><ArrowDown /></el-icon>
+                </div>
+              </div>
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="profile">个人资料</el-dropdown-item>
@@ -276,56 +284,164 @@ const loadStats = async () => {
     stats.suspendedCompanies = 0
   }
 }
+
+// 获取用户角色
+const getUserRole = () => {
+  const userInfo = userStore.userInfo
+  if (!userInfo) return '未知角色'
+  
+  if (userInfo.userType === 2) {
+    return '平台超级管理员'
+  } else if (userInfo.userType === 1) {
+    if (userInfo.companyRole === 2) {
+      return '企业管理员'
+    } else if (userInfo.companyRole === 1) {
+      return '普通员工'
+    }
+  }
+  return '未知角色'
+}
 </script>
 
 <style scoped>
 .admin-dashboard {
   height: 100vh;
+  background: #f0f2f5;
 }
 
-.sidebar-header {
-  height: 60px;
+/* 头部样式 */
+.dashboard-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: none;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #2b3a4a;
-  color: white;
-  border-bottom: 1px solid #3a4a5a;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.sidebar-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+.dashboard-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+}
+
+.header-left {
+  position: relative;
+  z-index: 1;
 }
 
 .header-left h2 {
   margin: 0;
-  color: #303133;
-  font-size: 20px;
-  font-weight: 600;
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header-right {
   display: flex;
   align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
 }
 
-.user-dropdown {
+/* 用户信息区域 */
+.user-info {
   display: flex;
   align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
 }
 
-.user-dropdown:hover {
-  background-color: #f5f7fa;
+.user-info:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.user-dropdown .el-icon {
-  margin-left: 8px;
-  font-size: 12px;
+.dropdown-arrow {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.user-info:hover .dropdown-arrow {
+  color: white;
+  transform: translateY(1px);
+}
+
+/* 用户下拉菜单容器 */
+.user-dropdown-container {
+  margin-left: 0;
+}
+
+.user-avatar {
+  flex-shrink: 0;
+}
+
+.user-avatar :deep(.el-avatar) {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: white;
+}
+
+.user-role {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.2;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .header-right {
+    gap: 12px;
+  }
+  
+  .user-info {
+    padding: 6px 12px;
+  }
+  
+  .user-avatar :deep(.el-avatar) {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .user-name {
+    font-size: 12px;
+  }
+  
+  .user-role {
+    font-size: 10px;
+  }
 }
 </style> 

@@ -79,3 +79,20 @@ export function auditNews(newsId, data) {
     data
   })
 }
+
+// ==================== 新增函数开始 ====================
+
+/**
+ * 从指定URL抓取新闻内容
+ * @param {string} url 要抓取的网址
+ * @returns {Promise}
+ */
+export function scrapeNews(url) {
+  return request({
+    url: '/news/scrape', 
+    method: 'post',
+    data: { url },
+    // 【重要】新增一个更长的超时时间
+    timeout: 30000 // 30秒超时
+  });
+}
