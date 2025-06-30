@@ -128,10 +128,19 @@
               <div class="empty-state">
                 <el-empty description="暂无数据">
                   <template #description>
-                    <p>暂无动态数据</p>
-                    <p v-if="loading">正在加载中...</p>
-                    <p v-else>数据加载完成，共 {{ pagination.total }} 条记录</p>
-                    <p>当前列表长度: {{ newsList.length }}</p>
+                    <div class="empty-info">
+                      <p v-if="loading" class="loading-text">正在加载中...</p>
+                      <p v-else-if="pagination.total === 0" class="no-data-text">暂无动态数据</p>
+                      <p v-else class="data-info">数据加载完成，共 {{ pagination.total }} 条记录</p>
+                      <p class="debug-info">当前列表长度: {{ newsList.length }}</p>
+                      <p class="debug-info">当前页码: {{ pagination.currentPage }}, 每页大小: {{ pagination.pageSize }}</p>
+                    </div>
+                  </template>
+                  <template #extra>
+                    <el-button type="primary" @click="handleRefresh" :loading="loading">
+                      <el-icon><Refresh /></el-icon>
+                      刷新数据
+                    </el-button>
                   </template>
                 </el-empty>
               </div>
@@ -171,7 +180,7 @@
           </el-table>
 
           <!-- 分页 -->
-          <div class="pagination-container" v-if="pagination.total > 0">
+          <div class="pagination-container">
             <el-pagination
               v-model:current-page="pagination.currentPage"
               v-model:page-size="pagination.pageSize"
@@ -180,6 +189,7 @@
               layout="total, sizes, prev, pager, next, jumper"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
+              :hide-on-single-page="false"
             />
           </div>
         </div>
@@ -336,29 +346,57 @@ const loadNewsList = async () => {
   loading.value = true
   try {
     const params = {
-      page: pagination.currentPage,
-      size: pagination.pageSize,
+      pageNum: pagination.currentPage,
+      pageSize: pagination.pageSize,
       title: filters.title || undefined,
       authorName: filters.authorName || undefined,
       status: filters.status !== null ? filters.status : undefined
     }
+    
+    // 清理空值参数
+    Object.keys(params).forEach(key => {
+      if (params[key] === undefined || params[key] === '') {
+        delete params[key];
+      }
+    });
+    
     console.log('请求参数:', params)
+    console.log('当前分页状态:', {
+      currentPage: pagination.currentPage,
+      pageSize: pagination.pageSize,
+      total: pagination.total
+    })
     const response = await getNewsList(params)
     console.log('API响应:', response)
+    console.log('API响应data:', response.data)
+    console.log('API响应data类型:', typeof response.data)
+    console.log('API响应data是否为数组:', Array.isArray(response.data))
+    if (response.data && typeof response.data === 'object') {
+      console.log('API响应data的keys:', Object.keys(response.data))
+    }
     
     // 处理不同的数据结构
     if (response.data && response.data.records) {
       // 如果返回的是 { data: { records: [], total: number } }
-      newsList.value = response.data.records
-      pagination.total = response.data.total
+      newsList.value = response.data.records || []
+      pagination.total = response.data.total || 0
+    } else if (response.data && response.data.list) {
+      // 如果返回的是 { data: { list: [], total: number, pageNum: number, pageSize: number } }
+      newsList.value = response.data.list || []
+      pagination.total = response.data.total || 0
+      // 注意：不要同步后端返回的pageNum，因为后端可能没有正确处理分页
+      // 保持前端的分页状态
+      console.log('使用list数据结构，保持前端分页状态:', {
+        frontendPage: pagination.currentPage,
+        backendPageNum: response.data.pageNum,
+        pageSize: response.data.pageSize,
+        total: response.data.total,
+        listLength: response.data.list?.length
+      })
     } else if (response.data && Array.isArray(response.data)) {
       // 如果返回的是 { data: [] }
       newsList.value = response.data
       pagination.total = response.data.length
-    } else if (response.data && response.data.list) {
-      // 如果返回的是 { data: { list: [], total: number } }
-      newsList.value = response.data.list
-      pagination.total = response.data.total || response.data.list.length
     } else {
       // 默认处理
       newsList.value = response.data || []
@@ -367,7 +405,9 @@ const loadNewsList = async () => {
     
     console.log('处理后的数据:', {
       newsList: newsList.value,
-      total: pagination.total
+      total: pagination.total,
+      currentPage: pagination.currentPage,
+      pageSize: pagination.pageSize
     })
   } catch (error) {
     console.error('获取动态列表失败:', error)
@@ -392,12 +432,14 @@ const handleReset = () => {
 }
 
 const handleSizeChange = (size) => {
+  console.log('页面大小变化:', size)
   pagination.pageSize = size
   pagination.currentPage = 1
   loadNewsList()
 }
 
 const handleCurrentChange = (page) => {
+  console.log('当前页变化:', page)
   pagination.currentPage = page
   loadNewsList()
 }
@@ -1104,5 +1146,52 @@ onMounted(() => {
   .header-right {
     align-self: stretch;
   }
+}
+
+/* 空状态样式 */
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-info {
+  margin-top: 16px;
+}
+
+.loading-text {
+  color: #409eff;
+  font-weight: 500;
+}
+
+.no-data-text {
+  color: #909399;
+  font-weight: 500;
+}
+
+.data-info {
+  color: #67c23a;
+  font-weight: 500;
+}
+
+.debug-info {
+  color: #909399;
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+/* 调试按钮样式 */
+.debug-btn {
+  background: linear-gradient(135deg, #909399 0%, #606266 100%);
+  border: none;
+  color: white;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.debug-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(144, 147, 153, 0.4);
 }
 </style>
