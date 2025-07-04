@@ -1,11 +1,13 @@
 <script setup>
 // 应用根组件
+import FloatingAI from './components/FloatingAI.vue'
 </script>
 
 <template>
   <div id="app">
     <router-view />
-    </div>
+    <FloatingAI />
+  </div>
 </template>
 
 <style>
