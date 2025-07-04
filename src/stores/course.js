@@ -142,7 +142,7 @@ export const useCourseStore = defineStore('course', () => {
         }
       }
       
-      // 处理文件下载
+      // 处理文件下载（excel）
       const blob = new Blob([response.data], { 
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
       })

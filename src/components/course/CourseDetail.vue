@@ -59,6 +59,7 @@
 </template>
 
 <script setup>
+// 课程详情
 import { computed, onMounted, ref, watch } from 'vue'
 import { useCourseStore } from '@/stores/course.js'
 import { useUserStore } from '@/stores/user.js'

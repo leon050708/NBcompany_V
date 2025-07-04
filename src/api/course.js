@@ -18,7 +18,7 @@ export function getCourseDetail(courseId) {
 }
 
 
-// 创建课程
+// 创建新课程
 export function createCourse(data) {
   return request({
     url: '/courses',

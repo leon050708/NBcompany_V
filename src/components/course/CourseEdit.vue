@@ -29,7 +29,7 @@
     </el-card>
   </div>
 </template>
-
+<!--修改表单-->
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useCourseStore } from '@/stores/course.js'

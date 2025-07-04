@@ -33,10 +33,10 @@
           <el-button @click="resetSearch">重置</el-button>
         </el-form-item>
         <el-form-item style="float: right; margin-left: auto;">
-          <el-button type="info" @click="handleDebug" size="small" class="debug-btn">
-            <el-icon><Refresh /></el-icon>
-            调试
-          </el-button>
+<!--          <el-button type="info" @click="handleDebug" size="small" class="debug-btn">-->
+<!--            <el-icon><Refresh /></el-icon>-->
+<!--            调试-->
+<!--          </el-button>-->
           <el-button type="primary" @click="handleCreate">新建课程</el-button>
           <el-button @click="handleExport">导出课程</el-button>
         </el-form-item>
@@ -65,7 +65,7 @@
           </div>
         </template>
         
-        <el-table-column prop="id" label="ID" width="60" />
+<!--        <el-table-column prop="id" label="ID" width="60" />-->
         <el-table-column label="封面" width="80">
           <template #default="scope">
             <el-image 
