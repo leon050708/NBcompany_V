@@ -65,7 +65,7 @@
           </div>
         </template>
         
-        <el-table-column prop="id" label="ID" width="60" />
+        <!-- <el-table-column prop="id" label="ID" width="60" /> -->
         <el-table-column label="封面" width="80">
           <template #default="scope">
             <el-image 

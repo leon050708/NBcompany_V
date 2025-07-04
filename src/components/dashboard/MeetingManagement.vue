@@ -135,6 +135,7 @@
             
             <el-table v-loading="loading" :data="meetingList" @selection-change="handleAllSelectionChange" class="meeting-table">
           <el-table-column type="selection" width="55" />
+          <el-table-column prop="id" label="ID" />
           <el-table-column prop="meetingName" label="会议名称" min-width="200" show-overflow-tooltip />
           <el-table-column prop="companyName" label="所属公司" width="180" />
           <el-table-column prop="startTime" label="开始时间" width="180" :formatter="formatDateTime" />
@@ -156,6 +157,7 @@
             </template>
           </el-table-column>
         </el-table>
+          <div>调试输出：{{ meetingList }}</div>
           </div>
     </div>
 
@@ -475,7 +477,10 @@ const fetchMeetings = async () => {
     });
 
     const response = await getMeetingList(finalParams);
-    meetingList.value = response.data.records;
+    // 兼容单条对象和数组
+    const records = response.data.records;
+    meetingList.value = Array.isArray(records) ? records : (records ? [records] : []);
+    console.log('会议列表数据', meetingList.value);
     pagination.total = response.data.total;
   } catch (error) {
     console.error('获取会议列表失败:', error);
